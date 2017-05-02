@@ -1,6 +1,6 @@
-from Modeling.Components.VoltageSource import VoltageSource
-from Modeling.Components.Impedance import Impedance
-from Modeling.AbstractComponents.CompositeComponent import CompositeComponent
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
+from OSIM.Modeling.Components.Impedance import Impedance
+from OSIM.Modeling.AbstractComponents.CompositeComponent import CompositeComponent
 import re
 
 class Port(CompositeComponent):

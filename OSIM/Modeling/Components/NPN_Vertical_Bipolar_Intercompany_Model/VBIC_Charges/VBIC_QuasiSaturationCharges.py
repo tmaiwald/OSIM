@@ -1,7 +1,7 @@
-from Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.Components.Capacity import Capacity
 import numpy as np
-import Simulation.Utils as u
-from Modeling.Components.Charge import Charge
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.Components.Charge import Charge
 
 class QBC(Charge):
 

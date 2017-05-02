@@ -2,8 +2,8 @@ import math
 
 import numpy as np
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
-from Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
+from OSIM.Modeling.Components.Capacity import Capacity
 
 
 class Charge(Capacity):

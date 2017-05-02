@@ -1,6 +1,6 @@
 import time
 from copy import deepcopy
-from Optimizations.OptimizationComponents.AbstractParameterIterator import AbstractVariableIterator
+from OSIM.Optimizations.OptimizationComponents.AbstractParameterIterator import AbstractVariableIterator
 
 
 class BruteForceParameterIterator(AbstractVariableIterator):

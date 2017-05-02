@@ -1,6 +1,6 @@
 import warnings
 
-from Modeling.AbstractComponents.SingleComponent import SingleComponent
+from OSIM.Modeling.AbstractComponents.SingleComponent import SingleComponent
 
 class CurrentSource(SingleComponent):
 

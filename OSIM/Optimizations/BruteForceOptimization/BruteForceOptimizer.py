@@ -1,9 +1,9 @@
 import time
 
-from Optimizations.ConstraintFailureException import ConstraintFailureException
-from Optimizations.OptimizationComponents.Resultholder import Resultholder
-from Simulation.NRConvergenceException import NRConvergenceException
-from Optimizations.BruteForceOptimization.BruteForceParameterIterator import BruteForceParameterIterator
+from OSIM.Optimizations.ConstraintFailureException import ConstraintFailureException
+from OSIM.Optimizations.OptimizationComponents.Resultholder import Resultholder
+from OSIM.Simulation.NRConvergenceException import NRConvergenceException
+from OSIM.Optimizations.BruteForceOptimization.BruteForceParameterIterator import BruteForceParameterIterator
 from copy import deepcopy
 
 class BruteForceOptimizer(object):

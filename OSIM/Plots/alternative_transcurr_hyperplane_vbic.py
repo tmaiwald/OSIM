@@ -2,7 +2,7 @@ from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
-import Simulation.Utils as u
+import OSIM.Simulation.Utils as u
 
 fig = plt.figure()
 Ix = fig.gca(projection='3d')

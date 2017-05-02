@@ -1,4 +1,4 @@
-from Optimizations import OptimizationAPI as o
+from OSIM.Optimizations import OptimizationAPI as o
 import numpy as np
 
 class CostFunction(o.AbstractCostFunction):

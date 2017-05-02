@@ -1,5 +1,5 @@
 import numpy as np
-import Simulation.Utils as u
+import OSIM.Simulation.Utils as u
 
 vbic_is = 1  # TODO: !!
 vbic_is_mm = 1  # TODO: !!!

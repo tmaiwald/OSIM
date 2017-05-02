@@ -1,11 +1,11 @@
 import numpy as np
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge
-from Modeling.Components.Resistor import Resistor
-from Modeling.Components.VoltageSource import VoltageSource
-from Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge
+from OSIM.Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
+from OSIM.Modeling.Components.Capacity import Capacity
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
 
 #QJBE
 Nx = 1

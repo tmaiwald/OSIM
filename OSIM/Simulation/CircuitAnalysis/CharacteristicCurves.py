@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Simulation.NRConvergenceException  import NRConvergenceException
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Simulation.NRConvergenceException  import NRConvergenceException
 
 
 def createCharacteristicCurves(self, voltageSourceCE, fromvalce, tovalce, stepvoltce, voltageSourceBE, fromvalbe,

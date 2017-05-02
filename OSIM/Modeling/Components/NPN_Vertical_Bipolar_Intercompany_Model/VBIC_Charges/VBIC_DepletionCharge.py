@@ -1,4 +1,4 @@
-from Modeling.Components.Charge import Charge
+from OSIM.Modeling.Components.Charge import Charge
 import numpy as np
 
 class VBIC_DepletionCharge(Charge):

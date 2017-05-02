@@ -1,7 +1,7 @@
 import numpy as np
 
-import Simulation.Utils as u
-from Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
 
 
 class IBC(NonlinearComponent):  # behaves like a Diode

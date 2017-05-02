@@ -1,17 +1,16 @@
 """Use the triangle class to represent triangles."""
 
 import re
-from Modeling.Components.Capacity import Capacity
-from Modeling.Components.CurrentSource import CurrentSource
-from Modeling.Components.Diode import Diode
-from Modeling.Components.Inductance import Inductance
-from Modeling.Components.Port import Port
-from Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.Components.CurrentSource import CurrentSource
+from OSIM.Modeling.Components.Diode import Diode
+from OSIM.Modeling.Components.Inductance import Inductance
+from OSIM.Modeling.Components.Port import Port
+from OSIM.Modeling.Components.Resistor import Resistor
 import os
-from Modeling.Components.VoltageDependentCurrentSource import VoltageDependentCurrentSource
 
 import Utils as u
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.NPN_VBIC import NPN_VBIC
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.NPN_VBIC import NPN_VBIC
 
 class NetToComp(object):
     """Beispielkommentar"""

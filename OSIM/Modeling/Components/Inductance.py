@@ -1,7 +1,7 @@
 import math
 
-from Modeling.AbstractComponents.SingleComponent import SingleComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.AbstractComponents.SingleComponent import SingleComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 class Inductance(SingleComponent):
 

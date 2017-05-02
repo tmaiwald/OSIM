@@ -1,8 +1,8 @@
 import numpy as np
-from Simulation.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
 
-import Simulation.Utils as u
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 
 class NPNTransportCurrent(NonlinearComponent):

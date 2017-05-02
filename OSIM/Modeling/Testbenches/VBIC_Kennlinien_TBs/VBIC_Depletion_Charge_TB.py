@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 #QJBE
 Nx = 1

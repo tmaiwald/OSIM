@@ -1,7 +1,7 @@
 from numba import jit
 
-from Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
-from Modeling.Components.Diode import Diode
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.Components.Diode import Diode
 
 
 class IBCP(NonlinearComponent):

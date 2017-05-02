@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DiffusionCharges import *
-from Modeling.Components.VoltageSource import VoltageSource
-from Modeling.Components.Resistor import Resistor
-from Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DiffusionCharges import *
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
+from OSIM.Modeling.Components.Resistor import Resistor
+from OSIM.Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 class IT(object):
 

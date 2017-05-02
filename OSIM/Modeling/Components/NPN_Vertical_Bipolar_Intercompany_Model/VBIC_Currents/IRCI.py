@@ -1,9 +1,9 @@
 import numpy as np
 from numba import jit
 
-import Simulation.Utils as u
-from Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
 
 
 class IRCI(NonlinearComponent):  # behaves like a currentsource

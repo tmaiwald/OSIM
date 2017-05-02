@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
-from Simulation.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBC import *
-from Simulation.Components.Resistor import Resistor
-from Simulation.Components.VoltageSource import VoltageSource
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBC import *
+from OSIM.Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Simulation.CircuitAnalysis.CircuitAnalysis import CircuitAnalysis
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Simulation.CircuitAnalysis.CircuitAnalysis import CircuitAnalysis
 
 bi = 'b'
 ci = 'c'

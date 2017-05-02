@@ -1,7 +1,7 @@
 import numpy as np
-from Simulation.Components.Capacity import Capacity
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 class JunctionCapacity(Capacity):
 

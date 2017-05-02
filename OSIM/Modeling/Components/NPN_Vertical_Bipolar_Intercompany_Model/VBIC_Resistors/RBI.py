@@ -1,6 +1,6 @@
 
 import numpy as np
-from Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.Components.Resistor import Resistor
 
 class RBI(Resistor):
     def __init__(self, nodes, name, value, superComponent, **kwargs):

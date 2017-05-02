@@ -1,9 +1,9 @@
 import cmath
 
-from Simulation.Components.Capacity import Capacity
+from OSIM.Modeling.Components.Capacity import Capacity
 
-import Simulation.Utils as u
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 
 class DiffusionCapacity(Capacity):

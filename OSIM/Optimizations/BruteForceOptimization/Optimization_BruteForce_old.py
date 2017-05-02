@@ -9,8 +9,8 @@ from Simulation.NetToComp import NetToComp
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-from Simulation.CircuitAnalysis.ACAnalysis import ACAnalysis
-from Simulation.CircuitAnalysis.SParameterAnalysis import SParameterAnalysis
+from OSIM.Simulation.CircuitAnalysis.ACAnalysis import ACAnalysis
+from OSIM.Simulation.CircuitAnalysis.SParameterAnalysis import SParameterAnalysis
 
 
 #circuit = '__Circuits/TransistorTB.net'

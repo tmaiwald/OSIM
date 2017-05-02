@@ -1,6 +1,6 @@
-import Simulation.Utils as u
-from Modeling.Components.Charge import Charge
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.VBIC_ParasitTransportCurrent import ParasitTransportCurrent
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.Components.Charge import Charge
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.VBIC_ParasitTransportCurrent import ParasitTransportCurrent
 import numpy as np
 
 class QDBE(Charge):

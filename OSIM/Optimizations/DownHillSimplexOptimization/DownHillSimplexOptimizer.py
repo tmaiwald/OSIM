@@ -32,8 +32,8 @@ Gegeben ist eine Zielfunktion f:R^{N} -> R, die jedem Punkt im Loesungsraum eine
 
 '''
 
-from Optimizations.OptimizationComponents.AbstractOptimizer import AbstractOptimizer
-from Optimizations.DownHillSimplexOptimization.SimplexEdge import SimplexEdge
+from OSIM.Optimizations.OptimizationComponents.AbstractOptimizer import AbstractOptimizer
+from OSIM.Optimizations.DownHillSimplexOptimization.SimplexEdge import SimplexEdge
 import numpy as np
 from copy import deepcopy
 import sys

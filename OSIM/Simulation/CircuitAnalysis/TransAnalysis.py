@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit
 
 from CircuitAnalysis import CircuitAnalysis as ca
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 
 @jit

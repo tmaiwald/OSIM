@@ -58,19 +58,19 @@ from http://www.designers-guide.org/VBIC/release1.1.5/vbic1.1.5_pseudoCode.html
 // |                                                                           |
 // ---------------------------------------------------------------------------
 '''
-from Modeling.AbstractComponents.CompositeComponent import CompositeComponent
-from Modeling.Components.Capacity import Capacity
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DiffusionCharges import *
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_QuasiSaturationCharges import QBC
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBC import IBC
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBE import IBE
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IRCI import IRCI
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Resistors.RBI import RBI
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.VBIC_TransportCurrent import MainTransportCurrent
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.IBCP import IBCP
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.IBEP import IBEP
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.VBIC_ParasitTransportCurrent import ParasitTransportCurrent
-from Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.AbstractComponents.CompositeComponent import CompositeComponent
+from OSIM.Modeling.Components.Capacity import Capacity
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DiffusionCharges import *
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_QuasiSaturationCharges import QBC
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBC import IBC
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBE import IBE
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IRCI import IRCI
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Resistors.RBI import RBI
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.VBIC_TransportCurrent import MainTransportCurrent
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.IBCP import IBCP
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.IBEP import IBEP
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.VBIC_ParasitTransportCurrent import ParasitTransportCurrent
+from OSIM.Modeling.Components.Resistor import Resistor
 from VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge
 
 '''

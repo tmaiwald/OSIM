@@ -3,11 +3,11 @@
 # NPN Transistor -> Netzliste : Name Basis Emitter Collector __Parameter
 #
 from NPNTransportCurrent import NPNTransportCurrent
-from Simulation.AbstractComponents.CompositeComponent import CompositeComponent
-from Simulation.Components.Diode import Diode
+from OSIM.Modeling.AbstractComponents.CompositeComponent import CompositeComponent
+from OSIM.Modeling.Components.Diode import Diode
 from DiffusionCapacity import DiffusionCapacity
 from JunctionCapacity import JunctionCapacity
-from Simulation.Components.Resistor import Resistor
+from OSIM.Modeling.Components.Resistor import Resistor
 
 class NPNTransistor_SGP(CompositeComponent):
 

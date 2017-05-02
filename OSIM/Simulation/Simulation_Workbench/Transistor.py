@@ -1,7 +1,7 @@
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
-from Simulation.NetToComp import NetToComp
-import Simulation.Utils as u
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
+from OSIM.Simulation.NetToComp import NetToComp
+import OSIM.Simulation.Utils as u
 
 seq = CircuitSystemEquations(NetToComp('Transistor/Transistor.net').getComponents())
 

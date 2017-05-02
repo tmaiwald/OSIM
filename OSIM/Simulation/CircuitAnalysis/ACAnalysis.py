@@ -1,9 +1,9 @@
 import numpy as np
 from numba import jit
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Modeling.Components.Port import Port
-from Modeling.Components.VoltageSource import VoltageSource
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.Components.Port import Port
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
 
 
 @jit

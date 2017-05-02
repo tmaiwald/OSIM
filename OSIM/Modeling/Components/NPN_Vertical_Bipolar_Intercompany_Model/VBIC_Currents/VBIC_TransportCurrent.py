@@ -1,10 +1,10 @@
 import numpy as np
 from numba import jit
 
-import Simulation.Utils as u
-from Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge as dc
+import OSIM.Simulation.Utils as u
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Charges.VBIC_DepletionCharge import VBIC_DepletionCharge as dc
 
 '''
 UBE | UBC | Betriebszustand Einsatzgebiete

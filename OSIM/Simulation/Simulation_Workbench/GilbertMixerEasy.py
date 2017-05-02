@@ -1,7 +1,7 @@
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
 import numpy as np
-from Simulation.NetToComp import NetToComp
+from OSIM.Simulation.NetToComp import NetToComp
 
 seq = CircuitSystemEquations(NetToComp('GilbertMixer/GilberMixerEasy.net').getComponents())
 ca = CircuitAnalyser(seq)

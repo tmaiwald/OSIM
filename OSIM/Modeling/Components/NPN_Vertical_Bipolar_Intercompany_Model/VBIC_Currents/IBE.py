@@ -1,7 +1,7 @@
 from numba import jit
-import Simulation.Utils as u
+import OSIM.Simulation.Utils as u
 import numpy as np
-from Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
 
 
 class IBE(NonlinearComponent):  # behaves like a Diode

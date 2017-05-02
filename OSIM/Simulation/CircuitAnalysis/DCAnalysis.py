@@ -3,11 +3,11 @@ from copy import copy
 import numpy as np
 
 from CircuitAnalysis import CircuitAnalysis as ca
-from  Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
-from Modeling.Components.Port import Port
-from Modeling.Components.VoltageSource import VoltageSource
-from Simulation.NRConvergenceException import NRConvergenceException
+from  OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.Components.Port import Port
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
+from OSIM.Simulation.NRConvergenceException import NRConvergenceException
 
 
 def calcDCOperatingPoint(sys):
