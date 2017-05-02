@@ -24,7 +24,7 @@ class NetToComp(object):
 
         projRootFold = u.getDirectory()
         print()
-        netListFile = os.path.join(os.path.abspath('../..'), '__Circuits',filename)#"".join((projRootFold,"/__Circuits/",filename))
+        netListFile = os.path.join(os.path.abspath('../..'), '__Diverse Schaltungen',filename)#"".join((projRootFold,"/__Circuits/",filename))
 
         self.spice_netlist = open(netListFile, 'rb')
 

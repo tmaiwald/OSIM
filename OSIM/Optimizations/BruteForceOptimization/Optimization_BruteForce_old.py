@@ -21,7 +21,7 @@ from OSIM.Simulation.CircuitAnalysis.SParameterAnalysis import SParameterAnalysi
 #circuit = '__Circuits/SParameterTB.net'
 #circuit = '__Circuits/TransAnalysisTB.net'
 #circuit = '__Circuits/TransTransistorAnalysisTB.net'
-circuit = '__Circuits/OptimizerAmplifierTB.net'
+circuit = '__Diverse Schaltungen/OptimizerAmplifierTB.net'
 
 seq = CircuitSystemEquations(NetToComp(circuit).getComponents())
 sp =  SParameterAnalysis(seq)
