@@ -93,6 +93,7 @@ class CircuitAnalyser(object):
     def getACAnalysis_linx(self,sigsourcename,obsNames,f_from,f_to,f_step):
         if(not self.hasDCPoint and not self.hasConvergenceProb):
             self.calcDCOperatingPoint()
+
         return ac.getACAnalysis_linx(deepcopy(self.sys), sigsourcename, obsNames, f_from, f_to, f_step)
 
     def getImpedanceAt(self,portname,freq):

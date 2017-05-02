@@ -1,6 +1,6 @@
 import numpy as np
 
-from Modeling.CircuitSystemEquations import CircuitSystemEquations
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 from Modeling.Components.CurrentSource import CurrentSource
 from Modeling.Components.Port import Port
 from Modeling.Components.VoltageSource import VoltageSource
