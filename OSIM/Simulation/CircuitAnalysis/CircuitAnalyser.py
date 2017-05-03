@@ -1,4 +1,3 @@
-
 from copy import deepcopy
 import DCAnalysis as dc
 import SParameterAnalysis as sp

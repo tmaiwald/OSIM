@@ -1,5 +1,4 @@
 """Use the triangle class to represent triangles."""
-
 import re
 from OSIM.Modeling.Components.Capacity import Capacity
 from OSIM.Modeling.Components.CurrentSource import CurrentSource
@@ -8,7 +7,6 @@ from OSIM.Modeling.Components.Inductance import Inductance
 from OSIM.Modeling.Components.Port import Port
 from OSIM.Modeling.Components.Resistor import Resistor
 import os
-
 import Utils as u
 from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.NPN_VBIC import NPN_VBIC
 
@@ -23,8 +21,7 @@ class NetToComp(object):
         """
 
         projRootFold = u.getDirectory()
-        print()
-        netListFile = os.path.join(os.path.abspath('../..'), '__Diverse Schaltungen',filename)#"".join((projRootFold,"/__Circuits/",filename))
+        netListFile = os.path.join(os.path.abspath('../'),filename)#"".join((projRootFold,"/__Circuits/",filename))
 
         self.spice_netlist = open(netListFile, 'rb')
 
@@ -70,8 +67,9 @@ class NetToComp(object):
                     npn = NPN_VBIC([arr[1], arr[2], arr[3], '0'], name, arr[4], None, pParams=path)
                     self.components.append(npn)
                 elif d == 'K':
-                    k = VoltageDependentCurrentSource([nodefrom, nodeto], name, value, None)
-                    self.components.append(k)
+                    pass
+                    #k = VoltageDependentCurrentSource([nodefrom, nodeto], name, value, None)
+                    #self.components.append(k)
                 elif d == 'P':
                     #nodes, name, voltage, seriesImpedance
                     args = self.stringArrToDict(arr[4:])

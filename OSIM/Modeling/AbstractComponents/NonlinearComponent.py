@@ -1,6 +1,6 @@
 
-from Modeling.AbstractComponents.SingleComponent import SingleComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations as c
+from OSIM.Modeling.AbstractComponents.SingleComponent import SingleComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations as c
 
 
 class NonlinearComponent(SingleComponent):

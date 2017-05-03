@@ -3,7 +3,7 @@
 # SingleComponent -> Netzliste : Name Startnode Endnode __Parameter
 #
 #
-from Modeling.AbstractComponents.Component import Component
+from OSIM.Modeling.AbstractComponents.Component import Component
 
 class SingleComponent(Component):
 

@@ -1,7 +1,7 @@
 import numpy as np
 
-from Modeling.AbstractComponents.SingleComponent import SingleComponent
-from Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
+from OSIM.Modeling.AbstractComponents.SingleComponent import SingleComponent
+from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations as ce
 
 
 class VoltageSource(SingleComponent):

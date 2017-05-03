@@ -3,7 +3,7 @@ from copy import copy
 import numpy as np
 
 from CircuitAnalysis import CircuitAnalysis as ca
-from  OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
+from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
 from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 from OSIM.Modeling.Components.Port import Port
 from OSIM.Modeling.Components.VoltageSource import VoltageSource
