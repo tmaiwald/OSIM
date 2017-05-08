@@ -32,3 +32,12 @@ class Inductance(SingleComponent):
                 self.sys.A[branchIdx, nodeIdx] = algebraicSign
                 self.sys.b[branchIdx] = 0
             algebraicSign = algebraicSign*-1
+
+
+    def setParameterValue(self,paramName,paramVal):
+        if(paramName == "L"):
+            self.value = paramVal
+            return
+        else:
+            print(self.name+" ERROR: "+paramName+" unknown!!")
+

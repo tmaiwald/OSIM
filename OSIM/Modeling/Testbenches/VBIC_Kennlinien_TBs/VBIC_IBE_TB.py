@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IBE import *
 from OSIM.Modeling.Components.Resistor import Resistor
 from OSIM.Modeling.Components.VoltageSource import VoltageSource
-
 from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 from OSIM.Simulation.CircuitAnalysis.CircuitAnalysis import CircuitAnalysis
+
 
 bi = 'b'
 ei = 'e'
@@ -25,7 +26,7 @@ r = Resistor([ei,'0'],"R1",1e-10,None)
 TBSys = CircuitSystemEquations([ibe,v1,r])
 ca = CircuitAnalysis(TBSys)
 
-x = np.arange(0, 0.9, 0.001)
+x = np.arange(0.8, 1.5, 0.001)
 current = np.zeros((len(x), 1), dtype=np.complex128)
 gd = np.zeros((len(x), 1), dtype=np.complex128)
 
@@ -37,6 +38,7 @@ for idx, v in enumerate(x):
     current[idx] = ibe.current
     gd[idx] = ibe.gd
 
+plt.figure(figsize=(5,5))
 plt.plot(x, gd , label="charge")
 #plt.plot(x, current, label="capacity")
 plt.show()

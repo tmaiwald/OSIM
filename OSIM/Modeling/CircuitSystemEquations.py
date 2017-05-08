@@ -124,7 +124,7 @@ class CircuitSystemEquations(object):
         return True
 
     def setValueForCompName(self,value,name):
-        from Modeling.Components.Resistor import Resistor
+        from OSIM.Modeling.Components.Resistor import Resistor
         comp = self.getCompByName(name)
         if(isinstance(comp,Resistor)):
             comp.setValue(value)
@@ -133,6 +133,9 @@ class CircuitSystemEquations(object):
             print("CircuitSystemEquation: setValueForCompName() component %s ist not implemented"%(type(comp)))
             raise EnvironmentError
 
+    def setParamterForComp(self,compname,paramname,paramval):
+        comp = self.getCompByName(compname)
+        comp.setParameterValue(paramname,paramval)
 
     def printComponents(self):
         for c in self.components:

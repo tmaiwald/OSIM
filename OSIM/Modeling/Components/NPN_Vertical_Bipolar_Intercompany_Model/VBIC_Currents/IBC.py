@@ -26,7 +26,7 @@ class IBC(NonlinearComponent):  # behaves like a Diode
         self.NCI = eval(self.paramDict.get("nci", "1"))
         self.AVC1 = eval(self.paramDict.get("avc1", "1"))
         self.AVC2 = eval(self.paramDict.get("avc2", "1"))
-        self.Udlim = 1
+        self.Udlim = 0.8
         self.MC = eval(self.paramDict.get("mc", "1"))
         self.PC = eval(self.paramDict.get("pc", "0.62"))
 

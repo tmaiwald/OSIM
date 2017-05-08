@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
-from OSIM.Simulation.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IRCI import *
-from OSIM.Simulation.Components.Resistor import Resistor
-from OSIM.Simulation.Components.VoltageSource import VoltageSource
-
+from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_Currents.IRCI import *
+from OSIM.Modeling.Components.Resistor import Resistor
+from OSIM.Modeling.Components.VoltageSource import VoltageSource
 from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.NPN_VBIC import NPN_VBIC
 from OSIM.Simulation.CircuitAnalysis.CircuitAnalysis import CircuitAnalysis
 from OSIM.Simulation.NRConvergenceException  import NRConvergenceException
-
+import numpy as np
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 

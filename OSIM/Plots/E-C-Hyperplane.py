@@ -14,9 +14,9 @@ dUB = fig.gca(projection='3d')
 raster = 0.01
 BFIX = 0.9
 CMIN = -1
-CMAX = 5
+CMAX = 1.2
 EMIN = -1
-EMAX = 1
+EMAX = 1.2
 diffh = 1e-10
 
 # if b < BMAX und  C >CMIN
@@ -66,13 +66,13 @@ dUE.set_xlabel('B')
 dUE.set_ylabel('C')
 dUE.set_zlabel('due')
 '''
-Ix.set_xlabel('E')
+Ix.set_xlabel('EI')
 Ix.set_xlim(EMIN, EMAX)
-Ix.set_ylabel('C')
+Ix.set_ylabel('CI')
 Ix.set_ylim(CMIN,CMAX)
 #Ix.set_ylabel('E')
 #Ix.set_ylim(EMIN, EMAX)
-Ix.set_zlabel('I')
+Ix.set_zlabel('IT')
 Ix.set_zlim(np.amin(I), np.amax(I))
 
 plt.show()

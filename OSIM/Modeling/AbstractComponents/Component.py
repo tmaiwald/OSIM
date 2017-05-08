@@ -36,6 +36,10 @@ class Component(object):
             c.sys = sys
 
     @abc.abstractmethod
+    def setParameterValue(self,paramName,paramVal):
+        print (self.name + ": Abstract Component: setParameterValue(...) not Implemented here")
+
+    @abc.abstractmethod
     def setOPValues(self):
         self.opValues["value"] = self.value
 
@@ -166,7 +170,7 @@ class Component(object):
     def parseArgs(self, **kwargs):
         for name, value in kwargs.items():
             if name == 'pParams':
-                self.paramDict =self.readParams(value)
+                self.paramDict = self.readParams(value)
                 self.pathParams = value
             if name == 'dict':
                 self.paramDict = value

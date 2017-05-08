@@ -151,7 +151,6 @@ class CircuitAnalyser(object):
     def plot_lin(self,res):
 
         resMat = res[0]
-
         f = pp.figure(13)
         f.suptitle(res[2])
         for r in range(resMat.shape[0]-1):
@@ -160,7 +159,6 @@ class CircuitAnalyser(object):
             f.show()
 
         pp.legend(loc="lower right", fontsize=12)
-
         pp.show()
 
     def plot_smith(self, res):

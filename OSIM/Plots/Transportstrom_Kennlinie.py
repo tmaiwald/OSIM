@@ -104,25 +104,27 @@ def _qb(B,C,E,Itf,Itr):  # TODO: gibt noch eine zweite Gleichung (siehe S. 99)
 
 
 def _ITF(BI, EI):
+
         lim = 100
+
         if(linearisieren):
             if(BI < 1.6):
                 lim = BI
             else:
                 lim = 1.6
 
-        return IS * (u.exp(BI - EI,1/(NF * UT),lim) - 1.0)
+        return  IS * (u.exp(BI - EI,1/(NF * UT),lim) - 1.0)
 
 def _ITR(BI,CI):
 
-        lim = 100
+        lim = 100#
         if(linearisieren):
             if(BI < 1.6):
                 lim = BI
             else:
                 lim = 1.6
 
-        return IS *ISSR * (u.exp(BI - CI,1/(NR * UT),lim) - 1.0)
+        return  IS *ISSR * (u.exp(BI - CI,1/(NR * UT),lim) - 1.0)
 
 
 def _IT(BI,CI,EI):
@@ -133,7 +135,9 @@ def _IT(BI,CI,EI):
         #    r_itr = _ITR(BI, 0)
 
         #else:
-            itf = _ITF(BI, EI)
-            itr = _ITR(BI, CI)
-            q_b =  _qb(BI,CI,EI,itf,itr)
-            return (itf -itr)/q_b
+
+
+        itf =  _ITF(BI, EI)
+        itr =  _ITR(BI, CI)
+        q_b =  _qb(BI,CI,EI,itf,itr)
+        return (itf -itr)/q_b

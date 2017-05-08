@@ -81,9 +81,6 @@ class NPN_VBIC(CompositeComponent):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(NPN_VBIC, self).__init__(nodes, name, value, superComponent, **kwargs)
 
-        if(self.COMPONENT_PRINT_WARNINGS):
-            print ("Warning: Ueberall darum gekuemmert, dass bei diode-streomen und deren ableitungen hinten das minus 1 beruecksichtigt wurde???")
-            print("darum kuemmern, dass perform calculations auch von supercomponents ausgefuehrt wird")
         '''
         Parameter
         '''
@@ -158,7 +155,7 @@ class NPN_VBIC(CompositeComponent):
         '''
         # Transportstromquelle Haupttransistor
         #self.IT = MainTransportCurrent([self.c, self.b, self.e], self.myName("IT"), 0, self)
-        self.IT = MainTransportCurrent([self.ci, self.bi, self.ei], self.myName("IT"), 0, self)
+        self.IT = MainTransportCurrent([self.ci, self.bi, self.ei], self.myName("IT"), 0, self,dict=self.paramDict)
         # Oxid - Overlap Capacities
         self.QBEO = Capacity([self.b,self.e],self.myName("QBEO"),self.CBEO,self)
         self.QBCO = Capacity([self.b,self.e],self.myName("QBCO"),self.CBCO,self)
@@ -168,8 +165,8 @@ class NPN_VBIC(CompositeComponent):
         self.IBE = IBE([self.bi, self.ei], self.myName("IBE"), 0, self,dict=self.paramDict)
         self.IBC = IBC([self.bi, self.ci], self.myName("IBC"), 0, self,dict=self.paramDict)
         #self.IBEX = IBE([self.bx, self.ei], self.myName("IBEX"), 0, self, isExternal=True,dict=self.paramDict) #wird bei ihp nicht mit-simuliert
-        #self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self)
-        self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 20, self)
+        self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self,dict=self.paramDict)
+        #self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
 
         # Bahnwidestaende
         re = eval(self.paramDict.get("re", "1"))
@@ -181,8 +178,8 @@ class NPN_VBIC(CompositeComponent):
 
         self.RE = Resistor([self.ei, self.e], self.myName("RE"),re, self)
         self.RBX = Resistor([self.b, self.bx], self.myName("RBX"),rbx, self)
-        #self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), rbi, self)
-        self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
+        self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), rbi, self)
+        #self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
         self.RCX = Resistor([self.c, self.cx], self.myName("RCX"),rcx, self)
         self.RBP = Resistor([self.bp, self.cx], self.myName("RBP"), rbp, self)
         self.RS = Resistor([self.si, self.s], self.myName("RS"),rs , self)
@@ -235,10 +232,44 @@ class NPN_VBIC(CompositeComponent):
     def containsNonlinearity(self):
         return True
 
+    def setParameterValue(self,paramName,paramVal):
+        if(paramName == "Nx"):
+            self.reloadParams_vbic(paramVal)
+            for i in self.internalComponents:
+                i.setParameterValue()
+
     def getTransportCurrent(self):
         return self.IT.current
 
     def ditr_A(self):
-        #print(self.IT.itr / (self.NR * self.UT))
         return self.IT.itr[0] / (self.NR * self.UT)
 
+    def reloadParams_vbic(self, Nx):
+
+        self.PE = eval(self.paramDict.get("pe", "1"))
+        self.PC = eval(self.paramDict.get("pc", "1"))
+        self.ME = eval(self.paramDict.get("me", "1"))
+        self.MC = eval(self.paramDict.get("mc", "1"))
+        self.MS = eval(self.paramDict.get("ms", "1"))
+        self.FC = eval(self.paramDict.get("fc", "1"))
+        self.PS = eval(self.paramDict.get("ps", "1"))
+        self.AJE = eval(self.paramDict.get("aje", "1"))
+        self.AJS = eval(self.paramDict.get("ajs", "1"))
+        self.AJC = eval(self.paramDict.get("ajc", "1"))
+        self.CJE = eval(self.paramDict.get("cje", "1"))
+        self.CJC = eval(self.paramDict.get("cjc", "1"))
+        self.CJEP = eval(self.paramDict.get("cjep", "1"))
+        self.CJCP = eval(self.paramDict.get("cjcp", "1"))
+        self.WBE = eval(self.paramDict.get("wbe", "1"))
+        self.VEF = eval(self.paramDict.get("vef", "30"))
+        self.VER = eval(self.paramDict.get("ver", "60"))
+        self.IKF = eval(self.paramDict.get("ikf", "10e10"))
+        self.IKR = eval(self.paramDict.get("ikr", "10e10"))
+        self.NKF = eval(self.paramDict.get("nkf", "0.5"))
+        self.NF = eval(self.paramDict.get("nf", "1"))
+        self.NR = eval(self.paramDict.get("nr", "1"))
+        self.IS = eval(self.paramDict.get("is", "1e-16"))
+        self.UT = eval(self.paramDict.get("Ut", "0.026"))
+        self.CBEO = eval(self.paramDict.get("cbeo", "0"))
+        self.CBCO = eval(self.paramDict.get("cbco", "0"))
+        self.CCSO = eval(self.paramDict.get("ccso", "1e-30"))
