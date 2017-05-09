@@ -1,8 +1,9 @@
 
 class Optimizable(object):
 
-    def __init__(self,names_list,valfrom,valto):
-        self.names = names_list
+    def __init__(self,comp_names_list,paramname,valfrom,valto):
+        self.names = comp_names_list
+        self.paramname = paramname
         self.vFrom = valfrom
         self.vTo = valto
         self.val = 0
@@ -30,3 +31,5 @@ class Optimizable(object):
         return (stri+" at %s"%(str(self.val)))
 
 
+    def getParamName(self):
+        return self.paramname

@@ -34,10 +34,10 @@ class Inductance(SingleComponent):
             algebraicSign = algebraicSign*-1
 
 
-    def setParameterValue(self,paramName,paramVal):
-        if(paramName == "L"):
-            self.value = paramVal
+    def setParameterOrVariableValue(self, name, value):
+        if(name == "L"):
+            self.value = value
             return
         else:
-            print(self.name+" ERROR: "+paramName+" unknown!!")
+            print(self.name +" ERROR: " + name + " unknown!!")
 

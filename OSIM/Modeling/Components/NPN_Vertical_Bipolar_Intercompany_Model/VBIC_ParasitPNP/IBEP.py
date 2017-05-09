@@ -16,7 +16,9 @@ class IBEP(NonlinearComponent):
         TODO: Defaultwerte anpassen
         '''
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.IBEIP = eval(self.paramDict.get("ibeip", "1"))
         self.IBENP = eval(self.paramDict.get("ibenp", "1"))
@@ -36,3 +38,15 @@ class IBEP(NonlinearComponent):
         nonideal = Diode.curr(1, self.IBENP, ubep, 1 / (self.UT * self.NCN))
         self.current = ideal + nonideal
         self.gd = Diode.gdiff(ideal, self.NCI, self.UT) + Diode.gdiff(nonideal, self.NCI, self.UT)
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
+        self.IBEIP = eval(self.paramDict.get("ibeip", "1"))
+        self.IBENP = eval(self.paramDict.get("ibenp", "1"))
+        self.NCN = eval(self.paramDict.get("ncn", "1"))
+        self.NCI = eval(self.paramDict.get("nci", "1"))
+        self.Udlim = eval(self.paramDict.get("Udlim", "1.5"))

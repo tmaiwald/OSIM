@@ -20,15 +20,16 @@ class IBE(NonlinearComponent):  # behaves like a Diode
         if (self.isExternal == True):
             self.WBE = 1 - self.WBE
 
-        vbic_ibei = 1
-        vbic_ibei_mm = 1
-        Nx = eval(self.paramDict.get("Nx", "1"))
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.IBEI = eval(self.paramDict.get("ibei", "1"))
         self.IBEN = eval(self.paramDict.get("iben", "1"))
         self.NEN = eval(self.paramDict.get("nen", "1"))
         self.NEI = eval(self.paramDict.get("nei", "1"))
-        self.Udlim = 1
+        self.Udlim = 0.9
 
     @jit
     def performCalculations(self):
@@ -65,3 +66,16 @@ class IBE(NonlinearComponent):  # behaves like a Diode
         gd = ideal / (self.NEI * self.UT) + nonideal / (self.NEN * self.UT)
 
         return (self.alpha)*gd
+
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
+        self.IBEI = eval(self.paramDict.get("ibei", "1"))
+        self.IBEN = eval(self.paramDict.get("iben", "1"))
+        self.NEN = eval(self.paramDict.get("nen", "1"))
+        self.NEI = eval(self.paramDict.get("nei", "1"))

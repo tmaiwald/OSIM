@@ -21,12 +21,12 @@ class Resistor(SingleComponent):
             return
         self.insertAdmittanceintoSystem(freq_or_tau)
 
-    def setParameterValue(self,paramName,paramVal):
-        if(paramName == "R"):
-            self.value = paramVal
+    def setParameterOrVariableValue(self, name, value):
+        if(name == "R"):
+            self.value = value
             self.insertAdmittanceintoSystem(0)
         else:
-            print(self.name + " ERROR: " + paramName + " unknown!!")
+            print(self.name + " ERROR: " + name + " unknown!!")
 
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
         return np.complex128(1 / self.value)

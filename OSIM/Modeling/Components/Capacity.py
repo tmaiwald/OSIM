@@ -21,10 +21,10 @@ class Capacity(SingleComponent):
         else:
             return (1j * 2 * math.pi * freq_or_tstep * self.value)
 
-    def setParameterValue(self, paramName, paramVal):
-        if (paramName == "C"):
-            self.value = paramVal
+    def setParameterOrVariableValue(self, name, value):
+        if (name == "C"):
+            self.value = value
             return
         else:
-            print(self.name + " ERROR: " + paramName + " unknown!!")
+            print(self.name + " ERROR: " + name + " unknown!!")
 

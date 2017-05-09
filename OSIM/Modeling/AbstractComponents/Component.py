@@ -16,6 +16,7 @@ class Component(object):
         self.sys = None#CircuitSystemEquations([])
         self.pathParams = ""
         self.paramDict = dict()
+        self.variableDict = dict()
         self.branches = list()
         self.nodes = nodes
         self.name = name
@@ -35,8 +36,22 @@ class Component(object):
         for c in self.internalComponents:
             c.sys = sys
 
+    def setNewParamsAndVariablesDicts(self,paramDict,variableDict):
+        self.paramDict = paramDict
+        self.variableDict = variableDict
+        self.reloadParams()
+
+    def updateParamsAndVariablesDicts(self,paramDict,variableDict):
+        self.paramDict.update(paramDict)
+        self.variableDict.update(variableDict)
+        self.reloadParams()
+
     @abc.abstractmethod
-    def setParameterValue(self,paramName,paramVal):
+    def reloadParams(self):
+        print (self.name + ": Abstract Component: reloadParams(...) not Implemented here")
+
+    @abc.abstractmethod
+    def setParameterOrVariableValue(self, name, value):
         print (self.name + ": Abstract Component: setParameterValue(...) not Implemented here")
 
     @abc.abstractmethod
@@ -139,20 +154,25 @@ class Component(object):
 
         return [x1v, x2v]
 
-    def readParams(self, filename):
-
+    def readParamsAndVariables(self, filename):
+        """ACHTUNG: BEIM AUSDRUECKE MIT VARIABLEN MUESSEN FLOATS ENTHALTEN UND KEINE INTEGER; WEIL SONST GEFAHR; DASS NICHT GERUNDET WIRD!!"""
         paramlist = open(filename, 'rb')
         paramDict = dict()
+        variables = dict()
 
         for line in paramlist:
             d = line[0]
             if not d == '.' and not d == " " and not d == "\n":  # Comments start with '.'
+                if (d == '+'):
+                    arr = line[1:].split()
+                    variables[arr[0]] = arr[1]
+                    continue
                 arr = line.split()
                 key = arr[0]
                 value = arr[1]
                 #paramDict["".join((self.name, key))] = value
                 paramDict[key] = value
-        return paramDict
+        return paramDict,variables
 
     def myBranchCurrent(self):
         return self.sys.x[self.bIdx]
@@ -170,10 +190,15 @@ class Component(object):
     def parseArgs(self, **kwargs):
         for name, value in kwargs.items():
             if name == 'pParams':
-                self.paramDict = self.readParams(value)
+                self.paramDict,self.variableDict = self.readParamsAndVariables(value)
                 self.pathParams = value
             if name == 'dict':
+                print(self.name+" Warning: parseArgs with keyword 'dict' is deprecated ! use paramdict instead ! ")
                 self.paramDict = value
+            if name == 'paramdict':
+                self.paramDict = value
+            if name == 'variabledict':
+                self.variableDict = value
 
     def performCalculations(self):
         pass

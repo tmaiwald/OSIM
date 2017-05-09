@@ -17,7 +17,10 @@ class IRCI(NonlinearComponent):  # behaves like a currentsource
         self.ci = nodes[1]  # to
         self.bi = nodes[2]
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.VO = eval(self.paramDict.get("vo", "0.8"))
         self.GAMM = eval(self.paramDict.get("gamm", "0.8"))
@@ -86,5 +89,14 @@ class IRCI(NonlinearComponent):  # behaves like a currentsource
         return Iohm / np.sqrt(1 + (self.RCI * Iohm / self.VO) ** 2)
 
 
+    def reloadParams(self):
 
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
+        self.VO = eval(self.paramDict.get("vo", "0.8"))
+        self.GAMM = eval(self.paramDict.get("gamm", "0.8"))
+        self.RCI = eval(self.paramDict.get("rci", "0.8"))
 

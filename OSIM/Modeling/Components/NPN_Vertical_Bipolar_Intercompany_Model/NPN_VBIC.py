@@ -84,49 +84,12 @@ class NPN_VBIC(CompositeComponent):
         '''
         Parameter
         '''
-        vbic_rbx = 1 # TODO: ?????
-        vbic_re = 1 # TODO: ?????
-        vbic_rcx = 1 # TODO: ?????
-        vbic_cje = 1
-        vbic_cje_mm = 1
-        vbic_cjc = 1
-        vbic_cjc_mm = 1
-        vbic_cjcp = 1
-        vbic_cjcp_mm = 1
-        vbic_is = 1
-        vbic_is_mm = 1
-        vbic_re_mm =1
-        vbic_rbx_mm = 1
-        vbic_rcx_mm = 1
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
-        self.PE = eval(self.paramDict.get("pe", "1"))
-        self.PC = eval(self.paramDict.get("pc", "1"))
-        self.ME = eval(self.paramDict.get("me", "1"))
-        self.MC = eval(self.paramDict.get("mc", "1"))
-        self.MS = eval(self.paramDict.get("ms", "1"))
-        self.FC = eval(self.paramDict.get("fc", "1"))
-        self.PS = eval(self.paramDict.get("ps", "1"))
-        self.AJE = eval(self.paramDict.get("aje", "1"))
-        self.AJS = eval(self.paramDict.get("ajs", "1"))
-        self.AJC = eval(self.paramDict.get("ajc", "1"))
-        self.CJE =  eval(self.paramDict.get("cje", "1"))
-        self.CJC =  eval(self.paramDict.get("cjc", "1"))
-        self.CJEP =  eval(self.paramDict.get("cjep", "1"))
-        self.CJCP =  eval(self.paramDict.get("cjcp", "1"))
-        self.WBE =  eval(self.paramDict.get("wbe", "1"))
-        self.VEF = eval(self.paramDict.get("vef", "30"))
-        self.VER = eval(self.paramDict.get("ver", "60"))
-        self.IKF = eval(self.paramDict.get("ikf", "10e10"))
-        self.IKR = eval(self.paramDict.get("ikr", "10e10"))
-        self.NKF = eval(self.paramDict.get("nkf", "0.5"))
-        self.NF = eval(self.paramDict.get("nf", "1"))
         self.NR = eval(self.paramDict.get("nr", "1"))
-        self.IS = eval(self.paramDict.get("is", "1e-16"))
-        self.UT = eval(self.paramDict.get("Ut", "0.026"))
-        self.CBEO = eval(self.paramDict.get("cbeo", "0"))
-        self.CBCO = eval(self.paramDict.get("cbco", "0"))
-        self.CCSO = eval(self.paramDict.get("ccso", "1e-30"))
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
 
         '''
         Knoten
@@ -155,17 +118,17 @@ class NPN_VBIC(CompositeComponent):
         '''
         # Transportstromquelle Haupttransistor
         #self.IT = MainTransportCurrent([self.c, self.b, self.e], self.myName("IT"), 0, self)
-        self.IT = MainTransportCurrent([self.ci, self.bi, self.ei], self.myName("IT"), 0, self,dict=self.paramDict)
+        self.IT = MainTransportCurrent([self.ci, self.bi, self.ei], self.myName("IT"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         # Oxid - Overlap Capacities
-        self.QBEO = Capacity([self.b,self.e],self.myName("QBEO"),self.CBEO,self)
-        self.QBCO = Capacity([self.b,self.e],self.myName("QBCO"),self.CBCO,self)
-        self.QCSO = Capacity([self.b,self.e],self.myName("QCSO"),self.CCSO,self)
+        self.QBEO = Capacity([self.b,self.e],self.myName("QBEO"),eval(self.paramDict.get("cbeo", "0")),self)
+        self.QBCO = Capacity([self.b,self.e],self.myName("QBCO"),eval(self.paramDict.get("cbco", "0")),self)
+        self.QCSO = Capacity([self.b,self.e],self.myName("QCSO"),eval(self.paramDict.get("ccso", "1e-30")),self)
 
         # Stroeme Haupttransistor
-        self.IBE = IBE([self.bi, self.ei], self.myName("IBE"), 0, self,dict=self.paramDict)
-        self.IBC = IBC([self.bi, self.ci], self.myName("IBC"), 0, self,dict=self.paramDict)
+        self.IBE = IBE([self.bi, self.ei], self.myName("IBE"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
+        self.IBC = IBC([self.bi, self.ci], self.myName("IBC"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         #self.IBEX = IBE([self.bx, self.ei], self.myName("IBEX"), 0, self, isExternal=True,dict=self.paramDict) #wird bei ihp nicht mit-simuliert
-        self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self,dict=self.paramDict)
+        self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self,paramdict=self.paramDict,variabledict=self.variableDict)
         #self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
 
         # Bahnwidestaende
@@ -174,25 +137,35 @@ class NPN_VBIC(CompositeComponent):
         rcx = eval(self.paramDict.get("rcx", "1"))
         rbp = eval(self.paramDict.get("rbp", "1"))
         rs  = eval(self.paramDict.get("rs", "1"))
-        rbi = eval(self.paramDict.get("rbi", "1"))
-
         self.RE = Resistor([self.ei, self.e], self.myName("RE"),re, self)
         self.RBX = Resistor([self.b, self.bx], self.myName("RBX"),rbx, self)
-        self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), rbi, self)
+        self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         #self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
         self.RCX = Resistor([self.c, self.cx], self.myName("RCX"),rcx, self)
         self.RBP = Resistor([self.bp, self.cx], self.myName("RBP"), rbp, self)
         self.RS = Resistor([self.si, self.s], self.myName("RS"),rs , self)
 
-        self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), self.CJE, self, dict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
-        self.QJBE = VBIC_DepletionCharge([self.bi, self.ei], self.myName("QJBE"), self.CJE,self, dict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE,'FAK':self.WBE})
-        self.QJBC = VBIC_DepletionCharge([self.bi, self.ci], self.myName("QJBC"), self.CJC,self, dict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
-        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), self.CJCP, self,dict= {'P':self.PS, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
-        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), self.CJEP, self,dict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
+        # Depletion Charges
+        self.PE = eval(self.paramDict.get("pe", "1"))
+        self.PC = eval(self.paramDict.get("pc", "1"))
+        self.ME = eval(self.paramDict.get("me", "1"))
+        self.MC = eval(self.paramDict.get("mc", "1"))
+        self.MS = eval(self.paramDict.get("ms", "1"))
+        self.FC = eval(self.paramDict.get("fc", "1"))
+        self.PS = eval(self.paramDict.get("ps", "1"))
+        self.AJE = eval(self.paramDict.get("aje", "1"))
+        self.AJS = eval(self.paramDict.get("ajs", "1"))
+        self.AJC = eval(self.paramDict.get("ajc", "1"))
+        self.WBE = eval(self.paramDict.get("wbe", "1"))
+        self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), 0, self,cname = "cje",paramdict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
+        self.QJBE = VBIC_DepletionCharge([self.bi, self.ei], self.myName("QJBE"),  0,self,cname = "cje", paramdict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE,'FAK':self.WBE})
+        self.QJBC = VBIC_DepletionCharge([self.bi, self.ci], self.myName("QJBC"), 0,self,cname = "cjc", paramdict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
+        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), 0, self,cname = "cjcp",paramdict= {'P':self.PS, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
+        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), 0, self,cname = "cjep",paramdict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
 
         #Diffuison Charges
-        self.QDBE = QDBE([self.bi, self.ei], self.myName("QDBE"),0, self,dict=self.paramDict)
-        self.QDBC = QDBC([self.bx, self.ci], self.myName("QDBC"),0, self,dict=self.paramDict)
+        self.QDBE = QDBE([self.bi, self.ei], self.myName("QDBE"),0, self,paramdict=self.paramDict,variabledict=self.variableDict)
+        self.QDBC = QDBC([self.bx, self.ci], self.myName("QDBC"),0, self,paramdict=self.paramDict,variabledict=self.variableDict)
 
         #Quasi-Saturation Charges
         #self.QBCX = QBC([self.bi, self.cx], self.myName("QBCX"),0, self, dict=self.paramDict)
@@ -200,10 +173,10 @@ class NPN_VBIC(CompositeComponent):
 
         ### Stroeme Parasitischer Transistor
         # Parasitischer Transistor:
-        self.ICCP = ParasitTransportCurrent([self.bx, self.bp, self.si], self.myName("ICCP"), 0, self,dict=self.paramDict)
+        self.ICCP = ParasitTransportCurrent([self.bx, self.bp, self.si], self.myName("ICCP"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         # Dioden-aehnliche Stroeme:
-        self.IBCP = IBCP([self.si, self.bp], self.myName("IBCP"), 0, self,dict=self.paramDict)
-        self.IBEP = IBEP([self.bx, self.bp], self.myName("IBEP"), 0, self,dict=self.paramDict)
+        self.IBCP = IBCP([self.si, self.bp], self.myName("IBCP"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
+        self.IBEP = IBEP([self.bx, self.bp], self.myName("IBEP"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         #self.QDBEP = QDBEP([self.bx, self.bp], self.myName("QDBEP"), 0, self,ParasitCurSource=self.ICCP)
         '''
         Hilfswiderstaende:
@@ -232,11 +205,10 @@ class NPN_VBIC(CompositeComponent):
     def containsNonlinearity(self):
         return True
 
-    def setParameterValue(self,paramName,paramVal):
-        if(paramName == "Nx"):
-            self.reloadParams_vbic(paramVal)
-            for i in self.internalComponents:
-                i.setParameterValue()
+    def setParameterOrVariableValue(self, name, value):
+        if(name == "Nx"):
+            self.variableDict["Nx"] = str(value)
+            self.reloadParams()
 
     def getTransportCurrent(self):
         return self.IT.current
@@ -244,7 +216,10 @@ class NPN_VBIC(CompositeComponent):
     def ditr_A(self):
         return self.IT.itr[0] / (self.NR * self.UT)
 
-    def reloadParams_vbic(self, Nx):
+    def reloadParams(self):
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
 
         self.PE = eval(self.paramDict.get("pe", "1"))
         self.PC = eval(self.paramDict.get("pc", "1"))
@@ -261,15 +236,50 @@ class NPN_VBIC(CompositeComponent):
         self.CJEP = eval(self.paramDict.get("cjep", "1"))
         self.CJCP = eval(self.paramDict.get("cjcp", "1"))
         self.WBE = eval(self.paramDict.get("wbe", "1"))
-        self.VEF = eval(self.paramDict.get("vef", "30"))
-        self.VER = eval(self.paramDict.get("ver", "60"))
-        self.IKF = eval(self.paramDict.get("ikf", "10e10"))
-        self.IKR = eval(self.paramDict.get("ikr", "10e10"))
-        self.NKF = eval(self.paramDict.get("nkf", "0.5"))
-        self.NF = eval(self.paramDict.get("nf", "1"))
-        self.NR = eval(self.paramDict.get("nr", "1"))
-        self.IS = eval(self.paramDict.get("is", "1e-16"))
-        self.UT = eval(self.paramDict.get("Ut", "0.026"))
-        self.CBEO = eval(self.paramDict.get("cbeo", "0"))
-        self.CBCO = eval(self.paramDict.get("cbco", "0"))
-        self.CCSO = eval(self.paramDict.get("ccso", "1e-30"))
+
+        self.QJBEX.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
+                                                'FAK': (1 - self.WBE)},dict())
+        self.QJBE.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
+                                               'FAK': self.WBE},dict())
+        self.QJBC.setNewParamsAndVariablesDicts({'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
+        self.QJBCP.setNewParamsAndVariablesDicts({'P': self.PS, 'M': self.MS, 'F': self.FC, 'AJ': self.AJS},dict())
+        self.QJBEP.setNewParamsAndVariablesDicts({'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
+
+        # Diffuison Charges
+        self.QDBE.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        self.QDBC.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+
+        re = eval(self.paramDict.get("re", "1"))
+        rbx = eval(self.paramDict.get("rbx", "1"))
+        rcx = eval(self.paramDict.get("rcx", "1"))
+        rbp = eval(self.paramDict.get("rbp", "1"))
+        rs = eval(self.paramDict.get("rs", "1"))
+        rbi = eval(self.paramDict.get("rbi", "1"))
+
+        self.RE.setParameterOrVariableValue("R",re)
+        self.RBX .setParameterOrVariableValue("R", rbx)
+        #self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
+        self.RCX.setParameterOrVariableValue("R",rcx)
+        self.RBP.setParameterOrVariableValue("R",rbp)
+        self.RS.setParameterOrVariableValue("R",rs)
+        self.RBI.setParameterOrVariableValue("R",rbi)
+
+        # Stroeme Haupttransistor
+        self.IT.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        self.IBE.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        self.IBC.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        # self.IBEX = IBE([self.bx, self.ei], self.myName("IBEX"), 0, self, isExternal=True,dict=self.paramDict) #wird bei ihp nicht mit-simuliert
+        self.IRCI.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        # self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
+
+        ### Stroeme Parasitischer Transistor
+        # Parasitischer Transistor:
+        self.ICCP.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        # Dioden-aehnliche Stroeme:
+        self.IBCP.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        self.IBEP.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        # self.QDBEP = QDBEP([self.bx, self.bp], self.myName("QDBEP"), 0, self,ParasitCurSource=self.ICCP)
+
+        # Quasi-Saturation Charges
+        # self.QBCX.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
+        # self.QBCI.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)

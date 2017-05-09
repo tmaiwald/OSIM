@@ -15,10 +15,10 @@ class ParasitTransportCurrent(NonlinearComponent):
 
         self.diffh = 0.000001
 
-        vbic_is = 1  # TODO: !!
-        vbic_is_mm = 1  # TODO: !!!
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
         self.NFP = eval(self.paramDict.get("nfp", "1"))
         self.ISP = eval(self.paramDict.get("isp", "1e-16"))
         self.UT = eval(self.paramDict.get("Ut", "0.026"))
@@ -115,3 +115,15 @@ class ParasitTransportCurrent(NonlinearComponent):
 
     def ditrp_A(self):
         return self.itrp /(self.NFP*self.UT)
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
+
+        self.NFP = eval(self.paramDict.get("nfp", "1"))
+        self.ISP = eval(self.paramDict.get("isp", "1e-16"))
+        self.UT = eval(self.paramDict.get("Ut", "0.026"))
+        self.WSP = eval(self.paramDict.get("wsp", "1"))
+        self.IKP = eval(self.paramDict.get("ikp", "1E-04*(Nx*0.25)"))

@@ -24,10 +24,10 @@ class MainTransportCurrent(NonlinearComponent):
 
         self.diffh = 1e-10
 
-        vbic_is = 1  # TODO: !!
-        vbic_is_mm = 1  # TODO: !!!
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
         self.NF = eval(self.paramDict.get("nf", "1"))
         self.NR = eval(self.paramDict.get("nr", "1"))
         self.IS = eval(self.paramDict.get("is", "1e-16"))
@@ -214,3 +214,30 @@ class MainTransportCurrent(NonlinearComponent):
         print("xmax: %G, idx:%i"%(np.amax(self.sys.x),np.argmax(self.sys.x)))
         #x = raw_input()
 
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
+
+        self.NF = eval(self.paramDict.get("nf", "1"))
+        self.NR = eval(self.paramDict.get("nr", "1"))
+        self.IS = eval(self.paramDict.get("is", "1e-16"))
+        self.ISSR = eval(self.paramDict.get("issr", "1"))
+        self.UT = eval(self.paramDict.get("Ut", "0.026"))
+        self.VEF = eval(self.paramDict.get("vef", "30"))
+        self.VER = eval(self.paramDict.get("ver", "60"))
+        self.IKF = eval(self.paramDict.get("ikf", "10e10"))
+        self.IKR = eval(self.paramDict.get("ikr", "10e10"))
+        self.NKF = eval(self.paramDict.get("nkf", "0.5"))
+        self.FC = eval(self.paramDict.get("fc", "0.97"))
+        self.AJE = eval(self.paramDict.get("aje", "-0.5"))
+        self.AJC = eval(self.paramDict.get("ajc", "-0.5"))
+        self.AJS = eval(self.paramDict.get("ajs", "-0.5"))
+        self.PC = eval(self.paramDict.get("pc", "0.62"))
+        self.PS = eval(self.paramDict.get("ps", "0.42"))
+        self.PE = eval(self.paramDict.get("pe", "0.9"))
+        self.ME = eval(self.paramDict.get("me", "0.105"))
+        self.MC = eval(self.paramDict.get("mc", "0.12"))
+        self.VRT = eval(self.paramDict.get("vrt", "0 "))  # TODO: Paramter von VBIC 1.2
+        self.ART = eval(self.paramDict.get("art", "0.1"))  # TODO:  Paramter von VBIC 1.2

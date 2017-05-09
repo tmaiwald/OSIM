@@ -8,12 +8,11 @@ class QDBE(Charge):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(QDBE, self).__init__(nodes, name, value, superComponent,**kwargs)
 
-        vbic_tf_mm  = 1 #TODO ?
-        vbic_tf = 1 #TODO ?
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
 
-        Nx = eval(self.paramDict.get("Nx", "1"))
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        temp = eval(self.paramDict.get("temp", "27")) ##TODO: ?????????wie loese ich die Temperaturabhaengigkeiten
         self.TF = eval(self.paramDict.get("tf", "0.026"))
         self.QTF = eval(self.paramDict.get("qtf", "0.026"))
         self.XTF = eval(self.paramDict.get("xtf", "10"))
@@ -40,13 +39,28 @@ class QDBE(Charge):
         h = 0.000000001
         return ((self.TFF(V+h)*self.superComponent.IT.itf/self.superComponent.IT.getqb()-self.getCharge())/h)[0]
 
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
+        self.TF = eval(self.paramDict.get("tf", "0.026"))
+        self.QTF = eval(self.paramDict.get("qtf", "0.026"))
+        self.XTF = eval(self.paramDict.get("xtf", "10"))
+        self.VTF = eval(self.paramDict.get("vtf", "10"))
+        self.ITF = eval(self.paramDict.get("itf", "10"))
+
+
 class QDBC(Charge):
 
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(QDBC, self).__init__(nodes, name, value, superComponent,**kwargs)
 
-        vbic_tf_mm  = 1 #TODO ????????????????????
-        vbic_tf = 1 #TODO ????????????????????
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
 
         self.TR = eval(self.paramDict.get("tr", "0.026"))
 
@@ -55,6 +69,15 @@ class QDBC(Charge):
 
     def dQdU_A(self):
         return self.TR*self.superComponent.ditr_A()
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.TR = eval(self.paramDict.get("tr", "0.026"))
+
 
 class QDBEP(Charge):
 
@@ -65,8 +88,9 @@ class QDBEP(Charge):
         if self.PCS.name == "0":
             print (name+" ERROR: ParasitCurrentSource has to be set!")
 
-        vbic_tf_mm  = 1 #TODO ????????????????????
-        vbic_tf = 1 #TODO ????????????????????
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
 
         self.TR = eval(self.paramDict.get("tr", "0.026"))
 
@@ -81,3 +105,11 @@ class QDBEP(Charge):
         for name, value in kwargs.items():
             if name == 'ParasitCurSource':
                 self.PCS = value
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.TR = eval(self.paramDict.get("tr", "0.026"))

@@ -18,7 +18,10 @@ class IBC(NonlinearComponent):  # behaves like a Diode
         '''
         TODO: Defaultwerte anpassen
         '''
-        Nx = eval(self.paramDict.get("Nx", "1"))
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.IBCI = eval(self.paramDict.get("ibci", "1"))
         self.IBCN = eval(self.paramDict.get("ibcn", "1"))
@@ -26,9 +29,10 @@ class IBC(NonlinearComponent):  # behaves like a Diode
         self.NCI = eval(self.paramDict.get("nci", "1"))
         self.AVC1 = eval(self.paramDict.get("avc1", "1"))
         self.AVC2 = eval(self.paramDict.get("avc2", "1"))
-        self.Udlim = 0.8
         self.MC = eval(self.paramDict.get("mc", "1"))
         self.PC = eval(self.paramDict.get("pc", "0.62"))
+
+        self.Udlim = 0.8
 
     def performCalculations(self):
         self.current,self.gd  = self.getCharacterisitcs()
@@ -64,4 +68,23 @@ class IBC(NonlinearComponent):  # behaves like a Diode
         #ig = self.igc(ubi, uci) # fehlt noch
         return (self.alpha)*ibcn / (self.NCN * self.UT) + ibci / (self.NCI * self.UT)
 
+    def reloadParams(self):
 
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec (variableExpr)
+
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.UT = eval(self.paramDict.get("ut", "0.026"))
+        self.IBCI = eval(self.paramDict.get("ibci", "1"))
+        self.IBCN = eval(self.paramDict.get("ibcn", "1"))
+        self.NCN = eval(self.paramDict.get("ncn", "1"))
+        self.NCI = eval(self.paramDict.get("nci", "1"))
+        self.AVC1 = eval(self.paramDict.get("avc1", "1"))
+        self.AVC2 = eval(self.paramDict.get("avc2", "1"))
+        self.MC = eval(self.paramDict.get("mc", "1"))
+        self.PC = eval(self.paramDict.get("pc", "0.62"))

@@ -6,8 +6,16 @@ class VBIC_DepletionCharge(Charge):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(VBIC_DepletionCharge, self).__init__(nodes, name, value, superComponent,**kwargs)
 
-        self.charge = value
-        self.CJx = value #0-V Sperrschichtkapazitaet
+        self.cname = ""
+        for name, value in kwargs.items():
+            if name == 'cname':
+                self.cname = value
+
+        if(self.cname == ""):
+            print("ERROR cname parameter has to be set !!!")
+
+        self.charge = eval(self.paramDict.get(self.cname, "1"))
+        self.CJx = eval(self.paramDict.get(self.cname, "1")) #0-V Sperrschichtkapazitaet
         self.P = self.paramDict.get("P", 1)
         self.M = self.paramDict.get("M", 1)
         self.F = self.paramDict.get("F", 1)
@@ -125,3 +133,18 @@ class VBIC_DepletionCharge(Charge):
             qlo = - P * (1.0 - vl / P) ** (1.0 - M) / (1.0 - M)
             qj = qlo + (1.0 - FC) ** (- M) * (V - vl + vl0) - q0
         return qj
+
+
+    def reloadParams(self):
+
+        for v in self.variableDict:
+            variableExpr = "".join((v, "=", self.variableDict[v]))
+            exec(variableExpr)
+
+        self.CJx = eval(self.paramDict.get(self.cname, "1"))  # 0-V Sperrschichtkapazitaet
+        self.P = self.paramDict.get("P", 1)
+        self.M = self.paramDict.get("M", 1)
+        self.F = self.paramDict.get("F", 1)
+        self.P = self.paramDict.get("P", 1)
+        self.AJ = self.paramDict.get("AJ", 1)
+        self.FAK = self.paramDict.get("FAK", 1)

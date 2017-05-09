@@ -19,8 +19,11 @@ seq = CircuitSystemEquations([v1,v2,npn,r1])
 
 ca = CircuitAnalyser(seq)
 
-#ca.plot_lin(ca.getDCParamSweep('V2',-1,1.6,0.1,["Q1IT"],'V1',[0.8]))
-res = ca.getDCParamSweep('V2',0,1.6,0.01,["R1"],'V1',[0.9])
-ca.plot_lin(res)
+for Nx in range(1,8):
+    seq.setParamterForComp("Q1","Nx",Nx)
+    #npn.setParameterOrVariableValue("Nx", Nx)
+    #ca.plot_lin(ca.getDCParamSweep('V2',-1,1.6,0.1,["Q1IT"],'V1',[0.8]))
+    res = ca.getDCParamSweep('V2',0,1.6,0.01,["R1"],'V1',[0.9])
+    ca.plot_lin(res)
 
 #u.resToPGFPlotFile(res,"Eingangskennlinie")

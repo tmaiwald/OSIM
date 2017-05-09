@@ -20,13 +20,14 @@ params["iben"] = "4E-15*(Nx*0.25)"
 params["nen"] = "2.7"
 params["nei"] = "1.022"
 
+
 v1 = VoltageSource([bi,'0'],"V1",0,None)
-ibe = IBE([bi,ei], "IBE", 0, None ,dict=params)
+ibe = IBE([bi,ei], "IBE", 0, None ,pParams='NPN_VBIC_npn13G2.comp')
 r = Resistor([ei,'0'],"R1",1e-10,None)
 TBSys = CircuitSystemEquations([ibe,v1,r])
 ca = CircuitAnalysis(TBSys)
 
-x = np.arange(0.8, 1.5, 0.001)
+x = np.arange(0, 1.5, 0.001)
 current = np.zeros((len(x), 1), dtype=np.complex128)
 gd = np.zeros((len(x), 1), dtype=np.complex128)
 
