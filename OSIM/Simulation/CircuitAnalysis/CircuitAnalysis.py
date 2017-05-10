@@ -165,8 +165,8 @@ class CircuitAnalysis(object):
             #if(DEBUG):
             #   debugNewton(sys,d,i,movelen)
 
-            if( i > 10):
-                print(i)
+            #if( i > 10):
+            #    print(i)
             if i == imax:
                 if(DEBUG and PLOT):
                     pass

@@ -55,14 +55,20 @@ class BruteForceParameterIterator(AbstractVariableIterator):
 
         if(not self.isFinished()):
 
+            setableList = list()
+
             for o in self.param_idx_dict:
                 listIdx = self.param_idx_dict[o]
                 paraVal = self._getValueForListIdx(listIdx)
                 o.setValue(paraVal)
-                for b in o.names:
-                   print(b+": %G"%(paraVal))
-                   retsys.getCompByName(b).setValue(complex(paraVal))
-                   #succ = csys.setValueForCompName(paraVal,b)
+
+            for o in self.olist:
+                for n in o.getOptimizableComponentNames():
+                    """compname, paramname, paramval"""
+                    n = [n, o.getParamName(), o.getValue()]
+                    setableList.append(n)
+
+            retsys.setParameterForCompsList(setableList)
 
             self.currentIteration +=1
 

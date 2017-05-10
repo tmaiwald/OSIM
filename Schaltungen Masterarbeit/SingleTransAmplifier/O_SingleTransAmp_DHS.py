@@ -8,11 +8,6 @@ class CostFunction(o.AbstractCostFunction):
         ca = o.CircuitAnalyser(ce)
         converged = ca.calcDCOperatingPoint()
 
-        if(not converged):
-            raise o.NRConvergenceException
-        if(not ce.checkConstraints(self.constraintList)):
-            raise o.ConstraintFailureException
-
         #ref18 = ca.getS11At("V2", 1e9)
         #print(1-np.absolute(ref18))
         mag = ca.getGain("V2","OUT",1e9)
@@ -25,9 +20,9 @@ class CostFunction(o.AbstractCostFunction):
 setup optimization
 '''
 
-seq = o.CircuitSystemEquations(o.NetToComp('SingleTransAmplifier/AmplifierTB.net').getComponents())
+seq = o.CircuitSystemEquations(o.NetToComp('AmplifierTB.net').getComponents())
 
-olist = [o.Optimizable(["R3"],600,1300),o.Optimizable(["R1","R2"],50000,80000)]
+olist = [o.Optimizable(["R3"],"R",600,1800),o.Optimizable(["R1"],"R",50000,80000),o.Optimizable(["Q1"],"Nx",1,8)]
 opti = o.DownHillSimplexOptimizer(seq,olist,CostFunction(list()),10,o.SimpleResult(),None)
 opti.run()
 
@@ -42,7 +37,7 @@ ranking = opti.getResults()
 for r in ranking:
     print (r.toString())
 
-seq = o.CircuitSystemEquations(o.NetToComp('SingleTransAmplifier/AmplifierTB.net').getComponents())
+seq = o.CircuitSystemEquations(o.NetToComp('AmplifierTB.net').getComponents())
 
 for op in ranking[0].getOptimizables():
     val = op.getValue()

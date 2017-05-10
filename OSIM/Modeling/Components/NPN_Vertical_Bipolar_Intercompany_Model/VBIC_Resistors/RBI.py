@@ -19,7 +19,6 @@ class RBI(Resistor):
         return self.superComponent.IT.getqb()/self.rbi
 
     def setParameterOrVariableValue(self, name, value):
-
         if(name == "R"):
             self.rbi = value
             self.insertAdmittanceintoSystem(0)

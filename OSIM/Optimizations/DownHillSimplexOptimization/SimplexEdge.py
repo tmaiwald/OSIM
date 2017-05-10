@@ -10,17 +10,19 @@ class SimplexEdge(object):
 
         # index in Liste entspricht auch index in Werte
         self.olist = deepcopy(olist)
-        self.x = np.zeros((len(olist),1),dtype=np.complex128)
+        self.x = np.zeros((len(olist),1),dtype=np.float64)
         self.g = np.zeros_like(self.x)
         self.costFunction = costFunction
         self.sys = sysEq
         self.cost = 100000
         self.curresult = resultTemplate.getNewInstance()
-
+        '''
         gc = int(self.__getGrayCode(len(self.olist),self.edgeNumber),2)
         print(gc)
+        '''
         # find initial EdgeValues, eg.random :
         for i in range(len(olist)):
+            print(rand.randrange(olist[i].getRangeBegin(),olist[i].getRangeEnd()))
             self.x[i] = rand.randrange(olist[i].getRangeBegin(),olist[i].getRangeEnd())
             '''
             n = (gc >> i) & 1
@@ -32,22 +34,23 @@ class SimplexEdge(object):
 
         self.updateEdgeValues(self.x)
 
-
     def updateEdgeValues(self, x):
         self.x = np.copy(x)
+        setableList = list()
+
         for vIdx in range(self.x.shape[0]):
             o = self.olist[vIdx]
-
             if(self.x[vIdx] < 0):
                 self.x[vIdx] = 0.001
-            #if(self.x[vIdx] > o.getRangeEnd()):
-            #    self.x[vIdx] = o.getRangeEnd()
+            o.setValue(self.x[vIdx][0])
 
-            o.setValue(self.x[vIdx])
+        for o in self.olist:
             for n in o.getOptimizableComponentNames():
-                #print(o.toString())
-                print(self.x[vIdx])
-                self.sys.getCompByName(n).setValue(self.x[vIdx][0])
+                """compname, paramname, paramval"""
+                n = [n,o.getParamName(),o.getValue()]
+                setableList.append(n)
+
+        self.sys.setParameterForCompsList(setableList)
 
     def getEdgeValues(self):
         return self.x
@@ -55,6 +58,8 @@ class SimplexEdge(object):
     def getReflectedEdge(self,m,alpha):
         '''4) reflektiere den schlechtesten Punkt am Mittelpunkt:
         r = (1+alpha)*m - alpha*x_N'''
+        print(m)
+        print(alpha)
         r = m+alpha*(m-self.x)#(1+alpha)*m - alpha*self.x
         r_edge = SimplexEdge(self.costFunction,self.sys,self.olist,self.curresult,self.edgeNumber)
         r_edge.updateEdgeValues(r)

@@ -84,6 +84,14 @@ class NPN_VBIC(CompositeComponent):
         '''
         Parameter
         '''
+
+        for name, value in kwargs.items():
+            if name == 'addargs':
+                addargs = value
+                for k in addargs:
+                    if k in self.variableDict:
+                        self.variableDict[k] = addargs[k]
+
         for v in self.variableDict:
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec (variableExpr)
@@ -137,10 +145,11 @@ class NPN_VBIC(CompositeComponent):
         rcx = eval(self.paramDict.get("rcx", "1"))
         rbp = eval(self.paramDict.get("rbp", "1"))
         rs  = eval(self.paramDict.get("rs", "1"))
+        print(re)
         self.RE = Resistor([self.ei, self.e], self.myName("RE"),re, self)
         self.RBX = Resistor([self.b, self.bx], self.myName("RBX"),rbx, self)
-        self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
-        #self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
+        #self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
+        self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), 100, self)
         self.RCX = Resistor([self.c, self.cx], self.myName("RCX"),rcx, self)
         self.RBP = Resistor([self.bp, self.cx], self.myName("RBP"), rbp, self)
         self.RS = Resistor([self.si, self.s], self.myName("RS"),rs , self)
@@ -157,11 +166,16 @@ class NPN_VBIC(CompositeComponent):
         self.AJS = eval(self.paramDict.get("ajs", "1"))
         self.AJC = eval(self.paramDict.get("ajc", "1"))
         self.WBE = eval(self.paramDict.get("wbe", "1"))
-        self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), 0, self,cname = "cje",paramdict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
-        self.QJBE = VBIC_DepletionCharge([self.bi, self.ei], self.myName("QJBE"),  0,self,cname = "cje", paramdict= {'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE,'FAK':self.WBE})
-        self.QJBC = VBIC_DepletionCharge([self.bi, self.ci], self.myName("QJBC"), 0,self,cname = "cjc", paramdict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
-        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), 0, self,cname = "cjcp",paramdict= {'P':self.PS, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
-        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), 0, self,cname = "cjep",paramdict= {'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
+        self.CJE = eval(self.paramDict.get("cje", "1"))
+        self.CJC = eval(self.paramDict.get("cjc", "1"))
+        self.CJCP = eval(self.paramDict.get("cjcp", "1"))
+        self.CJEP = eval(self.paramDict.get("cjep", "1"))
+
+        self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), 0, self,paramdict= {'CJx':self.CJE,'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
+        self.QJBE = VBIC_DepletionCharge([self.bi, self.ei], self.myName("QJBE"),  0,self, paramdict= {'CJx':self.CJE, 'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE,'FAK':self.WBE})
+        self.QJBC = VBIC_DepletionCharge([self.bi, self.ci], self.myName("QJBC"), 0,self, paramdict= {'CJx':self.CJC,'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
+        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), 0, self,paramdict= {'CJx':self.CJCP,'P':self.PS, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
+        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), 0, self,paramdict= {'CJx':self.CJEP,'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
 
         #Diffuison Charges
         self.QDBE = QDBE([self.bi, self.ei], self.myName("QDBE"),0, self,paramdict=self.paramDict,variabledict=self.variableDict)
@@ -231,19 +245,19 @@ class NPN_VBIC(CompositeComponent):
         self.AJE = eval(self.paramDict.get("aje", "1"))
         self.AJS = eval(self.paramDict.get("ajs", "1"))
         self.AJC = eval(self.paramDict.get("ajc", "1"))
+        self.WBE = eval(self.paramDict.get("wbe", "1"))
         self.CJE = eval(self.paramDict.get("cje", "1"))
         self.CJC = eval(self.paramDict.get("cjc", "1"))
-        self.CJEP = eval(self.paramDict.get("cjep", "1"))
         self.CJCP = eval(self.paramDict.get("cjcp", "1"))
-        self.WBE = eval(self.paramDict.get("wbe", "1"))
+        self.CJEP = eval(self.paramDict.get("cjep", "1"))
 
-        self.QJBEX.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
-                                                'FAK': (1 - self.WBE)},dict())
-        self.QJBE.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
+        #self.QJBEX.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
+        #                                        'FAK': (1 - self.WBE)},dict())
+        self.QJBE.setNewParamsAndVariablesDicts({'CJx':self.CJE,'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
                                                'FAK': self.WBE},dict())
-        self.QJBC.setNewParamsAndVariablesDicts({'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
-        self.QJBCP.setNewParamsAndVariablesDicts({'P': self.PS, 'M': self.MS, 'F': self.FC, 'AJ': self.AJS},dict())
-        self.QJBEP.setNewParamsAndVariablesDicts({'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
+        self.QJBC.setNewParamsAndVariablesDicts({'CJx':self.CJE,'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
+        self.QJBCP.setNewParamsAndVariablesDicts({'CJx':self.CJCP,'P': self.PS, 'M': self.MS, 'F': self.FC, 'AJ': self.AJS},dict())
+        self.QJBEP.setNewParamsAndVariablesDicts({'CJx':self.CJEP,'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
 
         # Diffuison Charges
         self.QDBE.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
@@ -262,7 +276,7 @@ class NPN_VBIC(CompositeComponent):
         self.RCX.setParameterOrVariableValue("R",rcx)
         self.RBP.setParameterOrVariableValue("R",rbp)
         self.RS.setParameterOrVariableValue("R",rs)
-        self.RBI.setParameterOrVariableValue("R",rbi)
+        #self.RBI.setParameterOrVariableValue("R",rbi)
 
         # Stroeme Haupttransistor
         self.IT.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)

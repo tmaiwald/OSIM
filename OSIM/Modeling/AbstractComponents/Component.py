@@ -4,6 +4,7 @@
 #
 #
 import abc
+import numpy as np
 
 class Component(object):
     """Abstract description of a component in a circuit"""
@@ -20,7 +21,7 @@ class Component(object):
         self.branches = list()
         self.nodes = nodes
         self.name = name
-        self.value = complex(value)
+        self.value = np.float64(value)
         self.type = name[0]
         self.internalComponents = list()
         self.internalComponents.append(self)

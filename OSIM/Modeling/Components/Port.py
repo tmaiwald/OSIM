@@ -19,6 +19,11 @@ class Port(CompositeComponent):
     def containsNonlinearity(self):
         return False
 
+    def setParameterOrVariableValue(self, name, value):
+        if (name == "V"):
+            self.value = value
+            self.V.changeMyVoltageInSys(value)
+
     def changeMyVoltageInSys(self, v):
         self.value = v
         self.V.changeMyVoltageInSys(v)

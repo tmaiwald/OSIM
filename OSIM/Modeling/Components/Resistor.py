@@ -29,4 +29,4 @@ class Resistor(SingleComponent):
             print(self.name + " ERROR: " + name + " unknown!!")
 
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
-        return np.complex128(1 / self.value)
+        return np.float64(1 / self.value)

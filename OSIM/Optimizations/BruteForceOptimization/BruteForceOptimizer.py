@@ -33,7 +33,6 @@ class BruteForceOptimizer(object):
             sys = self.paramIter.getSysOfNextIteration(self.oldResult.getCost())
             result = self.emptyResult.getNewInstance()
             try:
-                print("hier")
                 print(self.cCalc.getCost(sys,result))
             except NRConvergenceException:
                 if(not self.Log == None):

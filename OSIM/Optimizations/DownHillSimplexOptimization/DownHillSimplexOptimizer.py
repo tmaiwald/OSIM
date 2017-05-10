@@ -59,7 +59,8 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
 
      def run(self):
         print(len(self.edges))
-        if(len(self.edges) == 0):
+
+        if(len(self.edges) == 0): #in case no edges are set yet
             #1) waehle N+1 Anfangspunkte x_{0},x_{1},.....,x_{N} Element {R} ^{N}}, die den Simplex bilden
             for i in range(len(self.olist)+1):
                 e = SimplexEdge(self.costFunction,deepcopy(self.CircuitSysEq),self.olist,self.emptyResult,i)
@@ -81,7 +82,7 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
             self.printEdges()
 
             #3) bilde von allen ausser dem schlechtesten Punkt den Mittelpunkt m = 1/N *SUM(xi,0,N-1).
-            self.m = np.zeros((len(self.edges)-1,1),dtype=np.complex)
+            self.m = np.zeros((len(self.edges)-1,1),dtype=np.float64)
             for i in range(len(self.edges)-1):
                 self.m +=self.edges[i].getEdgeValues()
             self.m = self.m/(len(self.edges)-1)
@@ -94,7 +95,6 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
 
             print("reflektiert Cost %G: "%(r.getCost()))
             print(r.x)
-
 
             #5) unterscheide 3 Faelle
 
@@ -172,7 +172,11 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
          :type resultList:
          """
          edges = []
-         for i in range(len(resultList)):
+         numofedges = len(resultList[0].getOptimizables())+1
+         if(len(resultList) < numofedges):
+             print("ERROR: more results are needed !")
+
+         for i in range(numofedges):
              optis = resultList[i].getOptimizables()
              e = SimplexEdge(self.costFunction,deepcopy(self.CircuitSysEq),optis,resultList[0].getNewInstance(),i)
              list_x = []
@@ -181,9 +185,10 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
                  list_x.append(op.getValue())
 
              e.setEdgeValues(list_x)
+             e.cost = resultList[i].getCost()
              edges.append(e)
 
-         return edges
+         self.edges = edges
 
 
 

@@ -20,6 +20,7 @@ class NetToComp(object):
         :type filename:
         """
 
+
         projRootFold = u.getDirectory()
         netListFile = filename#os.path.join(os.path.abspath('../'),filename)#"".join((projRootFold,"/__Circuits/",filename))
 
@@ -45,7 +46,7 @@ class NetToComp(object):
                     #r = VoltageSource([nodefrom, nodeto], name, value, None)
                     args = self.stringArrToDict(arr[4:])
                     args = self.parseCommentsToArgs(args,comments,name)
-                    r = Port([nodefrom, nodeto], name, value, None, dict=args)
+                    r = Port([nodefrom, nodeto], name, value, None, paramdict=args)
                     self.components.append(r)
                 elif d == 'I':
                     r = CurrentSource([nodefrom, nodeto], name, value, None)
@@ -57,14 +58,15 @@ class NetToComp(object):
                     c = Capacity([nodefrom, nodeto], name, value, None)
                     self.components.append(c)
                 elif d == 'D':
-                    path = "".join((projRootFold,"/__Parameter/Diode_std.comp"))
+                    path = "Diode_std.comp"
                     c = Diode([nodefrom, nodeto], name, 0,None, pParams=path)
                     self.components.append(c)
                 elif d == 'Q':
                     #npn = NPNTransistor_SGP([arr[1], arr[2], arr[3]], name, arr[4], None, pParams="__Parameter/NPN_Gummel_BC547B.comp")
                     #npn = NPNEasy_SGP([arr[1], arr[2], arr[3]], name, arr[4])
-                    path = os.path.join(os.path.abspath('../..'), '__Parameter/NPN_VBIC_npn13G2.comp')
-                    npn = NPN_VBIC([arr[1], arr[2], arr[3], '0'], name, arr[4], None, pParams=path)
+                    path = ('NPN_VBIC_npn13G2.comp')
+                    addargs =  self.parseCommentsToArgs(dict(),comments,name)
+                    npn = NPN_VBIC([arr[1], arr[2], arr[3], '0'], name, arr[4], None, pParams=path,addargs = addargs)
                     self.components.append(npn)
                 elif d == 'K':
                     pass
@@ -73,8 +75,9 @@ class NetToComp(object):
                 elif d == 'P':
                     #nodes, name, voltage, seriesImpedance
                     args = self.stringArrToDict(arr[4:])
-                    k = Port([nodefrom, nodeto], name, value, None, dict=args)
+                    k = Port([nodefrom, nodeto], name, value, None, paramdict=args)
                     self.components.append(k)
+
 
     def getComponents(self):
         """Create a triangle with sides of lengths `a`, `b`, and `c`.
@@ -115,27 +118,6 @@ class NetToComp(object):
                     comments.append(line)
         return comments
 
-
-
-    @staticmethod
-    def readParams(filename, name):
-        """Create a triangle with sides of lengths `a`, `b`, and `c`.
-
-        Raises `ValueError` if the three length values provided cannot
-        actually form a triangle.
-        """
-
-        paramlist = open(filename, 'rb')
-        paramDict = dict()
-
-        for line in paramlist:
-            d = line[0]
-            if not d == '.' and not d == " " and not d == "\n":  # Comments start with '.'
-                arr = line.split()
-                key = arr[0]
-                value = arr[1]
-                paramDict["".join((name, "-", key))] = value
-        return paramDict
 
     def stringArrToDict(self, strArr):
         """Create a triangle with sides of lengths `a`, `b`, and `c`.

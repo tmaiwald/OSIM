@@ -101,7 +101,6 @@ class CircuitSystemEquations(object):
         return self.xprev[self.compDict.get(componentName)]
 
     def getCompByName(self, name):
-
         for b in self.components:
             if b.name == name:
                     return b
@@ -116,19 +115,21 @@ class CircuitSystemEquations(object):
                     return False
         return True
 
-    def checkConstraints(self,constraintList):
-
-        if(len(constraintList) > 0):
-            print("CircuitSystemEquation: checkConstrains() not implemented yet !!!")
-            raise EnvironmentError
-        return True
-
     def setParamterForComp(self,compname,paramname,paramval):
         comp = self.getCompByName(compname)
         comp.setParameterOrVariableValue(paramname, paramval)
         self.reset()
 
-    def printComponents(self):
-        for c in self.components:
-            for i in c.internalComponents:
-                print(i.name+" "+str(i.value))
+    def setParameterForCompsList(self,setables):
+        """
+
+        :param setables: list([compname,paramname,paramval],[...]) 
+        """
+        for s in setables:
+            comp = self.getCompByName(s[0])
+            comp.setParameterOrVariableValue(s[1], s[2])
+
+        self.reset()
+
+
+

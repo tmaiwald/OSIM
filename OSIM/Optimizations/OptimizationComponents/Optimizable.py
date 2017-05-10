@@ -30,6 +30,17 @@ class Optimizable(object):
 
         return (stri+" at %s"%(str(self.val)))
 
-
     def getParamName(self):
         return self.paramname
+
+    @staticmethod
+    def getSetableList(olist):
+        setableList = list()
+
+        for o in olist:
+            for n in o.getOptimizableComponentNames():
+                """compname, paramname, paramval"""
+                n = [n, o.getParamName(), o.getValue()]
+                setableList.append(n)
+
+        return setableList

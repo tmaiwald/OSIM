@@ -6,16 +6,8 @@ class VBIC_DepletionCharge(Charge):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(VBIC_DepletionCharge, self).__init__(nodes, name, value, superComponent,**kwargs)
 
-        self.cname = ""
-        for name, value in kwargs.items():
-            if name == 'cname':
-                self.cname = value
-
-        if(self.cname == ""):
-            print("ERROR cname parameter has to be set !!!")
-
-        self.charge = eval(self.paramDict.get(self.cname, "1"))
-        self.CJx = eval(self.paramDict.get(self.cname, "1")) #0-V Sperrschichtkapazitaet
+        self.charge = self.paramDict.get("CJx", "1")
+        self.CJx = self.paramDict.get("CJx", "1") #0-V Sperrschichtkapazitaet
         self.P = self.paramDict.get("P", 1)
         self.M = self.paramDict.get("M", 1)
         self.F = self.paramDict.get("F", 1)
@@ -141,7 +133,7 @@ class VBIC_DepletionCharge(Charge):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.CJx = eval(self.paramDict.get(self.cname, "1"))  # 0-V Sperrschichtkapazitaet
+        self.CJx = self.paramDict.get("CJx", "1")  # 0-V Sperrschichtkapazitaet
         self.P = self.paramDict.get("P", 1)
         self.M = self.paramDict.get("M", 1)
         self.F = self.paramDict.get("F", 1)
