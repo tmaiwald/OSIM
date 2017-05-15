@@ -37,6 +37,7 @@ from OSIM.Optimizations.DownHillSimplexOptimization.SimplexEdge import SimplexEd
 import numpy as np
 from copy import deepcopy
 import sys
+import random as rand
 
 class DownHillSimplexOptimizer(AbstractOptimizer):
 
@@ -51,7 +52,7 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
         self.edges = list()
         self.olist = olist
         self.m = np.zeros((len(olist),1),dtype=np.float)
-        self.maxIter = 100
+        self.maxIter = 1000
         self.emptyResult = empytResult
         self.costFunction = costFunction
         self.oldworstCost = 100
@@ -143,11 +144,16 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
         return results
 
      def isCompleted(self):
-
+        # finish optimization if worst cost is 0.01% away from best
         worstCost = self.edges[-1].getCost()
-        print(worstCost)
+        bestCost = self.edges[0].getCost()
+
         self.printEdges()
-        if abs(self.oldworstCost-worstCost) < self.eps:
+
+        print("isfinished ?: %G < %G"%(np.absolute(worstCost-bestCost)/np.absolute(bestCost),self.eps))
+
+        if np.absolute(worstCost-bestCost)/np.absolute(bestCost) < self.eps and not self.oldworstCost == worstCost:
+            print("True!")
             return True
         else:
             self.oldworstCost = worstCost
@@ -178,6 +184,11 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
 
          for i in range(numofedges):
              optis = resultList[i].getOptimizables()
+             ## 5% Rauschen auf die Ecken, um zu vermeiden, dass Startwerte alle gleich sind
+             for o in optis:
+                 v = o.getValue()
+                 o.setValue(rand.uniform(v-(0.05*v),v+(0.05*v)))
+
              e = SimplexEdge(self.costFunction,deepcopy(self.CircuitSysEq),optis,resultList[0].getNewInstance(),i)
              list_x = []
 

@@ -10,7 +10,7 @@ class CostFunction(o.AbstractCostFunction):
 
         #ref18 = ca.getS11At("V2", 1e9)
         #print(1-np.absolute(ref18))
-        mag = ca.getGain("V2","OUT",1e9)
+        mag = ca.getGain("V2","OUT",180e9)
         cost = - mag
         resultToFill.setCost(cost)
 

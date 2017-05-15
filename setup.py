@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='OSIM',
-    version = '0.0.445',
+    version = '0.0.492',
     description="unbekannt",
     author='Tim Maiwald',
     author_email='tim.maiwald92@googlemail.com',

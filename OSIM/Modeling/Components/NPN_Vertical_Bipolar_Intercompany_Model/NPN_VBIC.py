@@ -145,7 +145,7 @@ class NPN_VBIC(CompositeComponent):
         rcx = eval(self.paramDict.get("rcx", "1"))
         rbp = eval(self.paramDict.get("rbp", "1"))
         rs  = eval(self.paramDict.get("rs", "1"))
-        print(re)
+
         self.RE = Resistor([self.ei, self.e], self.myName("RE"),re, self)
         self.RBX = Resistor([self.b, self.bx], self.myName("RBX"),rbx, self)
         #self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
@@ -212,16 +212,16 @@ class NPN_VBIC(CompositeComponent):
         #self.QDBC = Capacity([self.bx,self.ci],self.myName("QDBC"),1e-15,self)
 
         #Quasi-Saturation Charges
-        self.QBCX = Capacity([self.bi,self.cx],self.myName("QBCX"),1e-15,self)
-        self.QBCI = Capacity([self.bi,self.ci],self.myName("QBCI"),1e-15,self)
+        self.QBCX = Capacity([self.bi,self.cx],self.myName("QBCX"),1e-17,self)
+        self.QBCI = Capacity([self.bi,self.ci],self.myName("QBCI"),1e-17,self)
 
 
     def containsNonlinearity(self):
         return True
 
     def setParameterOrVariableValue(self, name, value):
-        if(name == "Nx"):
-            self.variableDict["Nx"] = str(value)
+        if(name in self.variableDict.keys()):
+            self.variableDict[name] = str(value)
             self.reloadParams()
 
     def getTransportCurrent(self):

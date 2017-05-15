@@ -18,6 +18,8 @@ class AbstractOptimizer(object):
          self.numberOfIterations = AbstractOptimizer.UNKNOWN_NUMBER_OF_ITERATIONS
          self.resultHolder = Resultholder(numberOfResults)
          self.oldResult = empytResult
+         self.sys = CircuitSysEq
+         self.olist = olist
 
      '''
       hat explizit das Interface eines Threads -> zukuenftig als Thread lauffaehig

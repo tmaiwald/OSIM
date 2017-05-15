@@ -131,5 +131,8 @@ class CircuitSystemEquations(object):
 
         self.reset()
 
+    def printComponents(self):
+        for c in self.components:
+            print(c.name+" "+str(c.value))
 
 

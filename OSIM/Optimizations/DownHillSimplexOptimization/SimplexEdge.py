@@ -22,8 +22,7 @@ class SimplexEdge(object):
         '''
         # find initial EdgeValues, eg.random :
         for i in range(len(olist)):
-            print(rand.randrange(olist[i].getRangeBegin(),olist[i].getRangeEnd()))
-            self.x[i] = rand.randrange(olist[i].getRangeBegin(),olist[i].getRangeEnd())
+            self.x[i] = rand.uniform(olist[i].getRangeBegin(),olist[i].getRangeEnd())#rand.randrange(olist[i].getRangeBegin(),olist[i].getRangeEnd())
             '''
             n = (gc >> i) & 1
             if(n == 0):
@@ -51,6 +50,7 @@ class SimplexEdge(object):
                 setableList.append(n)
 
         self.sys.setParameterForCompsList(setableList)
+        print(setableList)
 
     def getEdgeValues(self):
         return self.x
@@ -58,8 +58,6 @@ class SimplexEdge(object):
     def getReflectedEdge(self,m,alpha):
         '''4) reflektiere den schlechtesten Punkt am Mittelpunkt:
         r = (1+alpha)*m - alpha*x_N'''
-        print(m)
-        print(alpha)
         r = m+alpha*(m-self.x)#(1+alpha)*m - alpha*self.x
         r_edge = SimplexEdge(self.costFunction,self.sys,self.olist,self.curresult,self.edgeNumber)
         r_edge.updateEdgeValues(r)

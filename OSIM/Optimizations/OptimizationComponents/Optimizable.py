@@ -1,12 +1,17 @@
 
 class Optimizable(object):
 
-    def __init__(self,comp_names_list,paramname,valfrom,valto):
+    def __init__(self,comp_names_list,paramname,valfrom,valto,**kwargs):
         self.names = comp_names_list
         self.paramname = paramname
+        self.minStep = 2 #default
         self.vFrom = valfrom
         self.vTo = valto
         self.val = 0
+
+        for name, value in kwargs.items():
+            if name == 'minSteps':
+               self.minStep = value
 
     def setValue(self, v):
         self.val = v

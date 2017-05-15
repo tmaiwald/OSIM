@@ -11,10 +11,13 @@ UNIT_VOLTAGE  = 1
 UNIT_MAG_20DB = 2
 UNIT_MAG_10DB = 3
 
+
 DEBUG = False
 PLOT = False
 
 class CircuitAnalysis(object):
+
+    MAX_NEWTON_ITERATIONS = 100
 
     def __init__(self, sysEquations):
         #print("TODO: bei doStep Uebergabeparameter abschaffen "+
@@ -102,16 +105,16 @@ class CircuitAnalysis(object):
     @staticmethod
     @jit(nogil=True)
     def newtonRaphson(sys):
-        eps = 1e-6  # Abbruchkriterium
+        eps = 1e-9  # Abbruchkriterium
         relDif = np.amax(np.absolute(sys.b))*eps
-        imax = 100 # maximale Iterationszahl "sollte mit jeder Iteration eine Stelle nach dem Komma genauer werden[UEBERPRUEFE !]"
+        imax = CircuitAnalysis.MAX_NEWTON_ITERATIONS# maximale Iterationszahl "sollte mit jeder Iteration eine Stelle nach dem Komma genauer werden[UEBERPRUEFE !]"
         i = 0  # Iterationsnummer
         ungenau = True
         wenig_iterationen = True
         d = 10
         movelen = 10
         sys.curNewtonIteration = 0
-        x_backup = sys.x
+        x_backup = np.copy(sys.x)
 
         Vmax = np.amax(np.absolute(sys.b))
 
@@ -165,13 +168,13 @@ class CircuitAnalysis(object):
             #if(DEBUG):
             #   debugNewton(sys,d,i,movelen)
 
-            #if( i > 10):
-            #    print(i)
+            if( i > 60):
+                print(i)
             if i == imax:
                 if(DEBUG and PLOT):
                     pass
                     #CircuitAnalysis.plotNewtonStats(movelens,its,functionValues,max_vals,max_names,difs,i)
-                sys.x = x_backup
+                sys.x = np.copy(x_backup)
                 print ("Newton-Raphson convergence failure")
                 #raise NRConvergenceException()
 

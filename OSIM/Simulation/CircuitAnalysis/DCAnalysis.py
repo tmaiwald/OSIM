@@ -37,7 +37,10 @@ def calcDCOperatingPoint(sys):
             for d in loadVoltages:
                 if(not d[0].value == d[2]):
                     d[0].changeMyVoltageInSys(d[0].value+d[1])
-            ca.newtonRaphson(sys)
+            res = ca.newtonRaphson(sys)
+
+        if(res[3] >= ca.MAX_NEWTON_ITERATIONS):
+            return  False
 
         for b in sys.components:
             b.setOPValues()

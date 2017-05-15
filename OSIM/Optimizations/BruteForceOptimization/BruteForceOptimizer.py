@@ -1,39 +1,38 @@
 import time
 
 from OSIM.Optimizations.ConstraintFailureException import ConstraintFailureException
+from OSIM.Optimizations.OptimizationComponents.AbstractOptimizer import AbstractOptimizer
 from OSIM.Optimizations.OptimizationComponents.Resultholder import Resultholder
 from OSIM.Simulation.NRConvergenceException import NRConvergenceException
 from OSIM.Optimizations.BruteForceOptimization.BruteForceParameterIterator import BruteForceParameterIterator
-from copy import deepcopy
 
-class BruteForceOptimizer(object):
+
+class BruteForceOptimizer(AbstractOptimizer):
 
      UNKNOWN_NUMBER_OF_ITERATIONS = -1
 
      def __init__(self,CircuitSysEq,olist,costFunction ,numberOfResults,empytResult,Log):
+         super(BruteForceOptimizer, self).__init__(CircuitSysEq, olist, costFunction, numberOfResults, empytResult,Log)
 
-         self.Log = Log
-         self.emptyResult = empytResult
-         self.cCalc = costFunction
-         self.complete = False
-         self.numberOfResults = numberOfResults
-         self.paramIter = BruteForceParameterIterator(deepcopy(CircuitSysEq),olist)
+         self.paramIter = BruteForceParameterIterator(CircuitSysEq,olist)
          self.numberOfIterations = BruteForceOptimizer.UNKNOWN_NUMBER_OF_ITERATIONS
-         self.resultHolder = Resultholder(numberOfResults)
-         self.oldResult =  empytResult
 
      '''
       hat explizit das Interface eines Threads -> zukuenftig als Thread lauffaehig
      '''
      def run(self):
+
+         print("Cost value before optimization: "+str(self.cCalc.getCost(self.sys, self.oldResult)))
+
          start = time.time()
 
          while(not self.complete):
 
-            sys = self.paramIter.getSysOfNextIteration(self.oldResult.getCost())
+            self.paramIter.setSysOfNextIteration(self.sys)
             result = self.emptyResult.getNewInstance()
+
             try:
-                print(self.cCalc.getCost(sys,result))
+                print(self.cCalc.getCost(self.sys,result))
             except NRConvergenceException:
                 if(not self.Log == None):
                     self.Log.error("Convergence Failure for...")
