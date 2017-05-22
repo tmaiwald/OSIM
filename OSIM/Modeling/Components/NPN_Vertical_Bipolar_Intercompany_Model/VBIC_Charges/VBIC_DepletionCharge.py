@@ -32,7 +32,7 @@ class VBIC_DepletionCharge(Charge):
         uto = self.sys.getSolutionAt(self.nodes[1]).real
         V = ufrom-uto
         h = 0.000001
-        return (self.CJx*(self.qj(V+h)-self.qj(V))/h)[0]
+        return self.CJx*(self.qj(V+h)-self.qj(V))/h
 
     def qj(self, V):
         P = self.P
@@ -47,7 +47,7 @@ class VBIC_DepletionCharge(Charge):
             //
             '''
 
-            if(V[0] > 1):
+            if(V > 1):
                 V = V/V
 
             dvh = V - FC * P

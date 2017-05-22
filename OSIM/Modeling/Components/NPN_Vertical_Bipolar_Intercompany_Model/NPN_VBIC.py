@@ -228,7 +228,7 @@ class NPN_VBIC(CompositeComponent):
         return self.IT.current
 
     def ditr_A(self):
-        return self.IT.itr[0] / (self.NR * self.UT)
+        return self.IT.itr/ (self.NR * self.UT)
 
     def reloadParams(self):
         for v in self.variableDict:

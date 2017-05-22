@@ -25,7 +25,6 @@ class Charge(Capacity):
             #self.sys.b[myIdx] = (self.charge-self.prevCharge)#/tau
             adm = self.getAdmittance(self.nodes, freq_or_tau)
             self.sys.b[myIdx] = adm * (x1v - x2v)
-            #print(self.sys.b[myIdx])
 
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
     #TODO fuer nummerische Stabilitaet einen kleinen Leitwert parallel schalten

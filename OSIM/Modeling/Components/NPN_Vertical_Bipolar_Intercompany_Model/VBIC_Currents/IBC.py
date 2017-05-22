@@ -38,8 +38,10 @@ class IBC(NonlinearComponent):  # behaves like a Diode
         self.current,self.gd  = self.getCharacterisitcs()
 
     def getCharacterisitcs(self):
-        ubi = (self.sys.getSolutionAt(self.bi).real)[0]
-        uci = (self.sys.getSolutionAt(self.ci).real)[0]
+        #ubi = (self.sys.getSolutionAt(self.bi).real)[0]
+        #uci = (self.sys.getSolutionAt(self.ci).real)[0]
+        ubi = (self.sys.getSolutionAt(self.bi).real)
+        uci = (self.sys.getSolutionAt(self.ci).real)
 
         ibcn = self.IBCN * (u.exp((ubi - uci), 1 / (self.NCN * self.UT), self.Udlim) - 1.0)
         ibci = self.IBCI * (u.exp((ubi - uci), 1 / (self.NCI * self.UT), self.Udlim) - 1.0)

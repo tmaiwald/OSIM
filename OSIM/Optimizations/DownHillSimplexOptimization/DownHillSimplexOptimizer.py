@@ -44,7 +44,7 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
      def __init__(self,CircuitSysEq,olist,costFunction ,numberOfResults,empytResult,Log):
         super(DownHillSimplexOptimizer, self).__init__(CircuitSysEq,olist,costFunction ,numberOfResults,empytResult,Log)
 
-        self.eps = 0.002
+        self.eps = 0.01
         self.alpha = 1
         self.beta = 1/2
         self.gamma = 2
@@ -52,7 +52,7 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
         self.edges = list()
         self.olist = olist
         self.m = np.zeros((len(olist),1),dtype=np.float)
-        self.maxIter = 1000
+        self.maxIter = 100
         self.emptyResult = empytResult
         self.costFunction = costFunction
         self.oldworstCost = 100

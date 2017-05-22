@@ -43,11 +43,11 @@ class CircuitSystemEquations(object):
             sysIdx = c.signIntoSysDictionary(self.compDict, sysIdx)
 
         self.n = len(self.compDict)#nnodes + nbranches  # Anzahl der Gleichunhen
-        self.x = np.zeros((self.n, 1), dtype=np.complex128)
-        self.g = np.zeros((self.n, 1), dtype=np.complex128)
+        self.x = np.zeros(self.n, dtype=np.complex128)
+        self.g = np.zeros(self.n, dtype=np.complex128)
         self.A = np.zeros((self.n, self.n), dtype=np.complex128)
         self.J = np.zeros((self.n, self.n), dtype=np.complex128)
-        self.b = np.zeros((self.n, 1), dtype=np.complex128)
+        self.b = np.zeros(self.n, dtype=np.complex128)
         self.xprev = np.zeros((self.n, 1), dtype=np.complex128)
         self.tnow = 0
         self.told = 0

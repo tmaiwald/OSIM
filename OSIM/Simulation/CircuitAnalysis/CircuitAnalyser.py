@@ -77,7 +77,7 @@ class CircuitAnalyser(object):
                     unit = "V"
                 else:
                     unit = "A"
-                print("%s : %G %s"%(name,self.sys.getSolutionAt(name)[0].real,unit))
+                print("%s : %G %s"%(name,self.sys.getSolutionAt(name).real,unit))
 
     '''
     ---------->  AC ANALYSIS <--------------------

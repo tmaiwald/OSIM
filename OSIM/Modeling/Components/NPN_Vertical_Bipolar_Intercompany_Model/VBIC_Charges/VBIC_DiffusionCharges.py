@@ -22,7 +22,7 @@ class QDBE(Charge):
     def TFF(self,V):
         itf = self.superComponent.IT.itf
         q1 = self.superComponent.IT.getq1()
-        b = 1+self.XTF*(itf[0]/(itf[0]+self.ITF))**2*u.exp(V,1/(1.44*self.VTF),1.5)
+        b = 1+self.XTF*(itf/(itf+self.ITF))**2*u.exp(V,1/(1.44*self.VTF),1.5)
         return self.TF*(1+self.QTF*q1)*b
 
     def getCharge(self):
@@ -37,7 +37,7 @@ class QDBE(Charge):
         uto = self.sys.getSolutionAt(self.nodes[1]).real
         V = (ufrom-uto)
         h = 0.000000001
-        return ((self.TFF(V+h)*self.superComponent.IT.itf/self.superComponent.IT.getqb()-self.getCharge())/h)[0]
+        return (self.TFF(V+h)*self.superComponent.IT.itf/self.superComponent.IT.getqb()-self.getCharge())/h
 
     def reloadParams(self):
 

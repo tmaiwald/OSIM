@@ -1,7 +1,9 @@
 from copy import deepcopy
-
 import matplotlib.pyplot as plt
 import mpl_toolkits.axisartist as AA
+from scipy.sparse import csr_matrix
+
+from scipy.sparse.linalg import spsolve
 import numpy as np
 from mpl_toolkits.axes_grid1 import host_subplot
 from numba import jit
@@ -139,7 +141,13 @@ class CircuitAnalysis(object):
             sys.curNewtonIteration = i
 
             CircuitAnalysis.nonlin(sys)
-            sys.x = np.linalg.solve(sys.A + sys.J,np.dot(sys.J,sys.x)-sys.g+sys.b)
+
+            ##SparseMatrixCalculations
+            A = csr_matrix(sys.A + sys.J)
+            b = np.dot(sys.J,sys.x)-sys.g+sys.b
+            sys.x = spsolve(A.tocsc(), b,permc_spec="NATURAL")
+
+            #sys.x = np.linalg.solve(sys.A + sys.J,np.dot(sys.J,sys.x)-sys.g+sys.b)
 
             '''
             for v in range(sys.x.shape[0]):

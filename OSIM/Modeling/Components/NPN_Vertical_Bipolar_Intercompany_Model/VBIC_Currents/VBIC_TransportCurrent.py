@@ -55,8 +55,8 @@ class MainTransportCurrent(NonlinearComponent):
         self.ci = nodes[0]
         #self.Udlim = 0.9
 
-        self.itf = [0]
-        self.itr = [0]
+        self.itf = 0
+        self.itr = 0
         self.current = 0
         self.dub = 0
         self.duc = 0
@@ -202,7 +202,7 @@ class MainTransportCurrent(NonlinearComponent):
         BI = self.sys.getSolutionAt(self.bi).real
         EI = self.sys.getSolutionAt(self.ei).real
         CI = self.sys.getSolutionAt(self.ci).real
-        return self._qb(BI,CI,EI,self.itf[0],self.itr[0])
+        return self._qb(BI,CI,EI,self.itf,self.itr)
 
     def debugPrint(self):
         print(self.sys.compDict)

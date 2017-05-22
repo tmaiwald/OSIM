@@ -25,6 +25,7 @@ def getTransient(sys,t_from, t_to, timeStep, observeList):
 
     for tIdx in range(1,absteps):
         sys.tnow = res[0][tIdx]
+        print("t= %G, t_end = %G, %G %%        \r"%(sys.tnow,res[0][-1],100*sys.tnow/(res[0][-1]-res[0][0])))
 
         for b in sys.components:
                 b.doStep(sys.tnow-sys.told)
