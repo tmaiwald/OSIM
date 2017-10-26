@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modeling.AbstractComponents.Component &#8212; OSIM 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Modeling.AbstractComponents.Component</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Erstellt 12.01.2017 </span>
+<span class="c1">#</span>
+<span class="c1"># SingleComponent -&gt; Netzliste : Name Startnode Endnode __Parameter</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract description of a component in a circuit&quot;&quot;&quot;</span>
+
+    <span class="n">GMIN</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">9</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">superComponent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">COMPONENT_PRINT_WARNINGS</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">superComponent</span> <span class="o">=</span> <span class="n">superComponent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sys</span> <span class="o">=</span> <span class="kc">None</span><span class="c1">#CircuitSystemEquations([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathParams</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variableDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opValues</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bIdx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parseArgs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">superComponent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateSuperCompositeComponent</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Component.assignToSystem"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.assignToSystem">[docs]</a>    <span class="k">def</span> <span class="nf">assignToSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sys</span> <span class="o">=</span> <span class="n">sys</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">sys</span> <span class="o">=</span> <span class="n">sys</span></div>
+
+<div class="viewcode-block" id="Component.setNewParamsAndVariablesDicts"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.setNewParamsAndVariablesDicts">[docs]</a>    <span class="k">def</span> <span class="nf">setNewParamsAndVariablesDicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">paramDict</span><span class="p">,</span><span class="n">variableDict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span> <span class="o">=</span> <span class="n">paramDict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variableDict</span> <span class="o">=</span> <span class="n">variableDict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reloadParams</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Component.updateParamsAndVariablesDicts"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.updateParamsAndVariablesDicts">[docs]</a>    <span class="k">def</span> <span class="nf">updateParamsAndVariablesDicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">paramDict</span><span class="p">,</span><span class="n">variableDict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">paramDict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variableDict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">variableDict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reloadParams</span><span class="p">()</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.reloadParams"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.reloadParams">[docs]</a>    <span class="k">def</span> <span class="nf">reloadParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: reloadParams(...) not Implemented here&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.setParameterOrVariableValue"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.setParameterOrVariableValue">[docs]</a>    <span class="k">def</span> <span class="nf">setParameterOrVariableValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: setParameterValue(...) not Implemented here&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.setOPValues"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.setOPValues">[docs]</a>    <span class="k">def</span> <span class="nf">setOPValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opValues</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="Component.printMyOPValues"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.printMyOPValues">[docs]</a>    <span class="k">def</span> <span class="nf">printMyOPValues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opValues</span><span class="p">)</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.getValue"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.getValue">[docs]</a>    <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: getValue() not Implemented here&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.setValue"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.setValue">[docs]</a>    <span class="k">def</span> <span class="nf">setValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: setValue() not Implemented here&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Component.getNodes"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.getNodes">[docs]</a>    <span class="k">def</span> <span class="nf">getNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span></div>
+
+<div class="viewcode-block" id="Component.signIntoSysDictionary"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.signIntoSysDictionary">[docs]</a>    <span class="k">def</span> <span class="nf">signIntoSysDictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">):</span>
+        <span class="n">sysIdx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerNodes</span><span class="p">(</span><span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">)</span>
+        <span class="n">sysIdx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registerBranches</span><span class="p">(</span><span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sysIdx</span></div>
+
+<div class="viewcode-block" id="Component.registerNodes"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.registerNodes">[docs]</a>    <span class="k">def</span> <span class="nf">registerNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">compDict</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                        <span class="n">compDict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">sysIdx</span>
+                        <span class="n">sysIdx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">sysIdx</span></div>
+
+<div class="viewcode-block" id="Component.registerBranches"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.registerBranches">[docs]</a>    <span class="k">def</span> <span class="nf">registerBranches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+            <span class="n">compDict</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sysIdx</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">bIdx</span> <span class="o">=</span> <span class="n">sysIdx</span>
+            <span class="n">sysIdx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">sysIdx</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.doStep"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.doStep">[docs]</a>    <span class="k">def</span> <span class="nf">doStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_or_tau</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; abstract function to use in a iteration of simulations</span>
+
+<span class="sd">        :param freq_or_tau: frequency or timestep value depending on simulation type</span>
+<span class="sd">        :type freq_or_tau: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: doStep() not Implemented here&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Component.putA"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.putA">[docs]</a>    <span class="k">def</span> <span class="nf">putA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">myIdx</span><span class="p">,</span> <span class="n">nm</span><span class="p">,</span> <span class="n">mn</span><span class="p">):</span>
+        <span class="n">A</span><span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="n">myIdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">nm</span>
+        <span class="n">A</span><span class="p">[</span><span class="n">myIdx</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">mn</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">xprev</span><span class="p">[</span><span class="n">node</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Component.putJ"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.putJ">[docs]</a>    <span class="k">def</span> <span class="nf">putJ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">mn</span><span class="p">):</span>
+        <span class="n">J</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">mn</span>
+        <span class="k">return</span></div>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="Component.getAdmittance"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.getAdmittance">[docs]</a>    <span class="k">def</span> <span class="nf">getAdmittance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodesFromTo</span><span class="p">,</span> <span class="n">freq_or_tstep</span><span class="p">):</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;: Abstract Component: getAdmittance() not Implemented here&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Component.Udiff"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.Udiff">[docs]</a>    <span class="k">def</span> <span class="nf">Udiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">twonodes</span><span class="p">):</span>
+        <span class="n">U1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">twonodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">U1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">twonodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">U2</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">twonodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">U2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">twonodes</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="k">return</span> <span class="n">U1</span> <span class="o">-</span> <span class="n">U2</span></div>
+
+<div class="viewcode-block" id="Component.containsNonlinearity"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.containsNonlinearity">[docs]</a>    <span class="k">def</span> <span class="nf">containsNonlinearity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Default, overwritten by Diode and Transistor and....</span></div>
+
+<div class="viewcode-block" id="Component.initialSignIntoSysEquations"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.initialSignIntoSysEquations">[docs]</a>    <span class="k">def</span> <span class="nf">initialSignIntoSysEquations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+            <span class="n">algebraicSign</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Plus</span>
+            <span class="n">branchIdx</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="n">nodeIdx</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">nodeIdx</span><span class="p">,</span> <span class="n">branchIdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">algebraicSign</span> <span class="o">*</span> <span class="mi">1</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">branchIdx</span><span class="p">,</span> <span class="n">branchIdx</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">branchIdx</span><span class="p">,</span> <span class="n">nodeIdx</span><span class="p">]</span> <span class="o">=</span> <span class="n">algebraicSign</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">getAdmittance</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">GMIN</span><span class="p">)</span>
+                <span class="n">algebraicSign</span> <span class="o">=</span> <span class="n">algebraicSign</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Component.insertAdmittanceintoSystem"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.insertAdmittanceintoSystem">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdmittanceintoSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+
+        <span class="n">adm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAdmittance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span><span class="o">+</span><span class="n">Component</span><span class="o">.</span><span class="n">GMIN</span>
+        <span class="n">x1v</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">x2v</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">x1v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">putA</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bIdx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">adm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="n">x2v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">putA</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bIdx</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">adm</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">x1v</span><span class="p">,</span> <span class="n">x2v</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Component.readParamsAndVariables"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.readParamsAndVariables">[docs]</a>    <span class="k">def</span> <span class="nf">readParamsAndVariables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;ACHTUNG: BEIM AUSDRUECKE MIT VARIABLEN MUESSEN FLOATS ENTHALTEN UND KEINE INTEGER; WEIL SONST GEFAHR; DASS NICHT GERUNDET WIRD!!&quot;&quot;&quot;</span>
+        <span class="n">paramlist</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="n">paramDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">paramlist</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">d</span> <span class="o">==</span> <span class="s2">&quot; &quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">d</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>  <span class="c1"># Comments start with &#39;.&#39;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;+&#39;</span><span class="p">):</span>
+                    <span class="n">arr</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                    <span class="n">variables</span><span class="p">[</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">continue</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c1">#paramDict[&quot;&quot;.join((self.name, key))] = value</span>
+                <span class="n">paramDict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">paramDict</span><span class="p">,</span><span class="n">variables</span></div>
+
+<div class="viewcode-block" id="Component.myBranchCurrent"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.myBranchCurrent">[docs]</a>    <span class="k">def</span> <span class="nf">myBranchCurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sys</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bIdx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Component.getMyParameterFromDictionary"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.getMyParameterFromDictionary">[docs]</a>    <span class="k">def</span> <span class="nf">getMyParameterFromDictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">paramDict</span><span class="p">,</span><span class="n">default</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">paramDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">param</span><span class="p">)),</span><span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Component.updateSuperCompositeComponent"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.updateSuperCompositeComponent">[docs]</a>    <span class="k">def</span> <span class="nf">updateSuperCompositeComponent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">superComponent</span><span class="o">.</span><span class="n">internalComponents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Component.voltageOverMe"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.voltageOverMe">[docs]</a>    <span class="k">def</span> <span class="nf">voltageOverMe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Udiff</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="Component.parseArgs"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.parseArgs">[docs]</a>    <span class="k">def</span> <span class="nf">parseArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;pParams&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">variableDict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readParamsAndVariables</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pathParams</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;dict&#39;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot; Warning: parseArgs with keyword &#39;dict&#39; is deprecated ! use paramdict instead ! &quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;paramdict&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">paramDict</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;variabledict&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variableDict</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Component.performCalculations"><a class="viewcode-back" href="../../../Modeling/Components.html#Modeling.AbstractComponents.Component.Component.performCalculations">[docs]</a>    <span class="k">def</span> <span class="nf">performCalculations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Tim Maiwald.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

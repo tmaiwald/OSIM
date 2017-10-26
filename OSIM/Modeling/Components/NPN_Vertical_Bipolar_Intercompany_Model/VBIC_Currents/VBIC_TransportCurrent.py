@@ -53,7 +53,6 @@ class MainTransportCurrent(NonlinearComponent):
         self.bi = nodes[1]
         self.ei = nodes[2]
         self.ci = nodes[0]
-        #self.Udlim = 0.9
 
         self.itf = 0
         self.itr = 0
@@ -64,14 +63,16 @@ class MainTransportCurrent(NonlinearComponent):
         self.sc = self.superComponent
         self.dUBEI = 0
         self.dUBCI = 0
-        self.EST_BV = 1000
-        self.EST_BR = 1000
 
     def setOPValues(self):
 
         self.performCalculations()
+        #self.dUBEI = self.due
+        #self.dUBCI = self.duc
         self.dUBEI = self.itf/(self.NF+self.UT)
         self.dUBCI = self.itr/(self.NR+self.UT)
+        #print(self.dUBEI)
+        #print(self.itf/(self.NF+self.UT))
         self.opValues["dUBCI"] = self.dUBCI
         self.opValues["dUBEI"] = self.dUBEI
         self.opValues["current"] = self.current
@@ -94,18 +95,6 @@ class MainTransportCurrent(NonlinearComponent):
             self.sys.g[self.sys.compDict.get(self.name)] = 0
             self.sys.b[self.bIdx] = self.dUBEI*self.Udiff([self.bi,self.ei]) - self.dUBCI * self.Udiff([self.bi, self.ci])
             return
-
-        if self.sys.atype == CircuitSystemEquations.ATYPE_EST_DC:
-
-            c,g = self.superComponent.IBE.getCharacterisitcs()
-            d,f = self.superComponent.IBC.getCharacterisitcs()
-
-            self.sys.b[self.bIdx] =(self.EST_BV*c - self.EST_BR*d)
-            j = (g* self.EST_BV - f*self.EST_BR)
-
-            self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.bi), j)
-            self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.ei), -j)
-            self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.ci), -2*j)
 
         if self.sys.atype in [CircuitSystemEquations.ATYPE_DC,CircuitSystemEquations.ATYPE_TRAN]:
             self.performCalculations()
@@ -165,14 +154,13 @@ class MainTransportCurrent(NonlinearComponent):
     @jit
     def performCalculations(self):
 
-        ubi = self.sys.getSolutionAt(self.bi).real
-        uei = self.sys.getSolutionAt(self.ei).real
-        uci = self.sys.getSolutionAt(self.ci).real
-
         if self.sys.atype == CircuitSystemEquations.ATYPE_NONE:
             print ("NPNTransportCurrent: WARNING: Analysis Type has to be set!")
 
         if self.sys.atype in [CircuitSystemEquations.ATYPE_DC, CircuitSystemEquations.ATYPE_TRAN]:
+            ubi = self.sys.getSolutionAt(self.bi).real
+            uei = self.sys.getSolutionAt(self.ei).real
+            uci = self.sys.getSolutionAt(self.ci).real
 
             self.current = self._IT(ubi,uci,uei)
             db_current = self._IT(ubi+self.diffh,uci,uei)
@@ -182,15 +170,6 @@ class MainTransportCurrent(NonlinearComponent):
             self.dub = (db_current-self.current)/self.diffh  # = dI_T/dub
             self.duc = (dc_current-self.current)/self.diffh   # = dI_T/duc
             self.due = -self.dub-self.duc #(de_current-self.current)/self.diffh   #TODO: Ueberpruefen !!!
-
-            '''
-            if(self.sys.getSolutionAt("N001")>= 0.773 and self.sys.curNewtonIteration == 1):
-                print ("ubi: %G, uci: %G, uei: %G"%(ubi,uci,uei))
-                print ("dub: %G, duc: %G, due: %G"%(self.dub,self.duc,self.due))
-                print ("current: %G"%(self.current))
-                print ("itf: %G , itr: %G"%(self.itf,self.itr))
-                x = raw_input()
-            '''
 
     def getq1(self):
         B = self.sys.getSolutionAt(self.bi).real

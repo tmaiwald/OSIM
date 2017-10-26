@@ -23,7 +23,7 @@ class CircuitAnalyser(object):
     '''
 
     def calcDCOperatingPoint(self):
-        converged = dc.calcDCOperatingPoint(self.sys)#dc.calcESTDCPoint(self.sys)#
+        converged = dc.calcDCOperatingPoint(self.sys)
         if(converged):
             self.hasDCPoint = True
         else:
@@ -55,7 +55,6 @@ class CircuitAnalyser(object):
         c = self.sys.getCompByName(sw_param_name)
         c.changeMyVoltageInSys(sw_from)
         dc.calcDCOperatingPoint(self.sys)
-
         return dc.getDCParamSweep(self.sys,sw_param_name,sw_from,sw_to,sw_step,observables_list,stepable_name,stepables_vals_list)
 
     def getDCOpAt(self,complist):

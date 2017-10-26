@@ -11,11 +11,13 @@ def exp(e, efak, Udlim):
     """
 
     if e > Udlim:
-        max = np.exp(Udlim * efak)
+        if(Udlim*efak > 50):
+            return np.e**(Udlim)
+        max = np.e**(Udlim * efak)
         m = max*efak
         return max + m*(e-Udlim)
     else:
-        return np.exp(e * efak)
+        return np.e**(e * efak)
 
 
 def dexp(e, efak, Udlim):

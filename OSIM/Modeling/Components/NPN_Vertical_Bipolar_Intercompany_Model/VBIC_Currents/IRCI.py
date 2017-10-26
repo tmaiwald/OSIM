@@ -23,8 +23,8 @@ class IRCI(NonlinearComponent):  # behaves like a currentsource
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.VO = eval(self.paramDict.get("vo", "0.8"))
-        self.GAMM = eval(self.paramDict.get("gamm", "0.8"))
-        self.RCI = eval(self.paramDict.get("rci", "0.8"))
+        self.GAMM = eval(self.paramDict.get("gamm", "3E-14"))
+        self.RCI = eval(self.paramDict.get("rci", "30"))
 
         self.gdbi = 0
         self.gdci = 0
@@ -73,9 +73,9 @@ class IRCI(NonlinearComponent):  # behaves like a currentsource
 
         ##Ableitungen:
         # in Richtung Anschluesse der Stromquelle
-        self.gdbi = (self.irci(uci, ubi + self.hdiff, ucx) - self.current) / self.hdiff
-        self.gdci = (self.irci(uci + self.hdiff, ubi, ucx) - self.current) / self.hdiff
-        self.gdcx = (self.irci(uci, ubi, ucx + self.hdiff) - self.current) / self.hdiff
+        self.gdbi = (self.irci(uci, ubi + self.hdiff, ucx) - self.current) / self.hdiff  + self.sys.GMIN
+        self.gdci = (self.irci(uci + self.hdiff, ubi, ucx) - self.current) / self.hdiff  + self.sys.GMIN
+        self.gdcx = (self.irci(uci, ubi, ucx + self.hdiff) - self.current) / self.hdiff  - self.sys.GMIN
 
     @jit
     def irci(self, uci, ubi, ucx):
@@ -97,6 +97,6 @@ class IRCI(NonlinearComponent):  # behaves like a currentsource
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
         self.VO = eval(self.paramDict.get("vo", "0.8"))
-        self.GAMM = eval(self.paramDict.get("gamm", "0.8"))
-        self.RCI = eval(self.paramDict.get("rci", "0.8"))
+        self.GAMM = eval(self.paramDict.get("gamm", "3E-14"))
+        self.RCI = eval(self.paramDict.get("rci", "30"))
 

@@ -15,18 +15,11 @@ class NonlinearComponent(SingleComponent):
         return True
 
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
-        if(self.sys.atype == c.ATYPE_EST_DC):
-            #print(self.name+" "+str(self.getESTDCAdmittance()))
-            return self.getESTDCAdmittance()
-
         return 0
 
     def setOPValues(self):
         self.performCalculations()
         self.opValues["gd"] = self.gd
-
-    def setAlpha(self,alpha):
-        self.alpha = alpha
 
     def doStep(self, freq_or_tau):
         if self.sys.atype == c.ATYPE_AC:
@@ -35,12 +28,8 @@ class NonlinearComponent(SingleComponent):
             self.performCalculations()
             self.sys.g[self.bIdx] = self.current
             if self.nodes[0] is not '0':
-                self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.nodes[0]), self.gd)
+                self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.nodes[0]), self.gd+self.sys.GMIN)
             if self.nodes[1] is not '0':
-                self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.nodes[1]), -self.gd)
-
-    def getESTDCAdmittance(self):
-        print(self.name+" Implement getESTDCAdmittance")
-        return 0
+                self.putJ(self.sys.J, self.bIdx, self.sys.compDict.get(self.nodes[1]), -self.gd-self.sys.GMIN)
 
 

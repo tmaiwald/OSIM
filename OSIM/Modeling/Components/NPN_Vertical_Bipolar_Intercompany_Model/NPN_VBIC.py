@@ -136,54 +136,55 @@ class NPN_VBIC(CompositeComponent):
         self.IBE = IBE([self.bi, self.ei], self.myName("IBE"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         self.IBC = IBC([self.bi, self.ci], self.myName("IBC"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         #self.IBEX = IBE([self.bx, self.ei], self.myName("IBEX"), 0, self, isExternal=True,dict=self.paramDict) #wird bei ihp nicht mit-simuliert
-        self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self,paramdict=self.paramDict,variabledict=self.variableDict)
-        #self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
+        #self.IRCI = IRCI([self.cx,self.ci,self.bi],self.myName("IRCI"),0,self,paramdict=self.paramDict,variabledict=self.variableDict)
+        self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
 
         # Bahnwidestaende
-        re = eval(self.paramDict.get("re", "1"))
-        rbx = eval(self.paramDict.get("rbx", "1"))
-        rcx = eval(self.paramDict.get("rcx", "1"))
-        rbp = eval(self.paramDict.get("rbp", "1"))
-        rs  = eval(self.paramDict.get("rs", "1"))
+        re = eval(self.paramDict.get("re", "5.3"))
+        rbx = eval(self.paramDict.get("rbx", "8"))
+        rcx = eval(self.paramDict.get("rcx", "6.5"))
+        rbp = eval(self.paramDict.get("rbp", "10"))
+        rs = eval(self.paramDict.get("rs", "50"))
+        rbi = eval(self.paramDict.get("rbi", "20"))
 
         self.RE = Resistor([self.ei, self.e], self.myName("RE"),re, self)
         self.RBX = Resistor([self.b, self.bx], self.myName("RBX"),rbx, self)
         #self.RBI = RBI([self.bx, self.bi], self.myName("RBI"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
-        self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), 100, self)
+        self.RBI = Resistor([self.bx, self.bi], self.myName("RBI"), rbi, self)
         self.RCX = Resistor([self.c, self.cx], self.myName("RCX"),rcx, self)
         self.RBP = Resistor([self.bp, self.cx], self.myName("RBP"), rbp, self)
         self.RS = Resistor([self.si, self.s], self.myName("RS"),rs , self)
 
         # Depletion Charges
-        self.PE = eval(self.paramDict.get("pe", "1"))
-        self.PC = eval(self.paramDict.get("pc", "1"))
-        self.ME = eval(self.paramDict.get("me", "1"))
-        self.MC = eval(self.paramDict.get("mc", "1"))
-        self.MS = eval(self.paramDict.get("ms", "1"))
-        self.FC = eval(self.paramDict.get("fc", "1"))
-        self.PS = eval(self.paramDict.get("ps", "1"))
-        self.AJE = eval(self.paramDict.get("aje", "1"))
-        self.AJS = eval(self.paramDict.get("ajs", "1"))
-        self.AJC = eval(self.paramDict.get("ajc", "1"))
+        self.PE = eval(self.paramDict.get("pe", "0.9"))
+        self.PC = eval(self.paramDict.get("pc", "0.9"))
+        self.ME = eval(self.paramDict.get("me", "0.105"))
+        self.MC = eval(self.paramDict.get("mc", "0.105"))
+        self.MS = eval(self.paramDict.get("ms", "0.105"))
+        self.FC = eval(self.paramDict.get("fc", "0.97"))
+        self.PS = eval(self.paramDict.get("ps", "0.97"))
+        self.AJE = eval(self.paramDict.get("aje", "-0.5"))
+        self.AJS = eval(self.paramDict.get("ajs", "-0.5"))
+        self.AJC = eval(self.paramDict.get("ajc", "-0.5"))
         self.WBE = eval(self.paramDict.get("wbe", "1"))
-        self.CJE = eval(self.paramDict.get("cje", "1"))
-        self.CJC = eval(self.paramDict.get("cjc", "1"))
-        self.CJCP = eval(self.paramDict.get("cjcp", "1"))
-        self.CJEP = eval(self.paramDict.get("cjep", "1"))
+        self.CJE = eval(self.paramDict.get("cje", "9.7E-15"))
+        self.CJC = eval(self.paramDict.get("cjc", "8E-16"))
+        self.CJCP = eval(self.paramDict.get("cjcp", "8E-15"))*0.3
+        self.CJEP = eval(self.paramDict.get("cjep", "4.2E-15"))*0.3
 
-        self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), 0, self,paramdict= {'CJx':self.CJE,'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
+        #self.QJBEX = VBIC_DepletionCharge([self.bx, self.ei], self.myName("QJBEX"), 0, self,paramdict= {'CJx':self.CJE,'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE ,'FAK':(1-self.WBE)})
         self.QJBE = VBIC_DepletionCharge([self.bi, self.ei], self.myName("QJBE"),  0,self, paramdict= {'CJx':self.CJE, 'P':self.PE, 'M':self.ME,'F':self.FC, 'AJ' :self.AJE,'FAK':self.WBE})
         self.QJBC = VBIC_DepletionCharge([self.bi, self.ci], self.myName("QJBC"), 0,self, paramdict= {'CJx':self.CJC,'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
-        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), 0, self,paramdict= {'CJx':self.CJCP,'P':self.PS, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
-        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), 0, self,paramdict= {'CJx':self.CJEP,'P':self.PC, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
+        self.QJBCP = VBIC_DepletionCharge([self.bp, self.si], self.myName("QJBCP"), 0, self,paramdict= {'CJx':self.CJCP,'P':self.PC, 'M':self.MS,'F':self.FC, 'AJ' :self.AJS})
+        self.QJBEP = VBIC_DepletionCharge([self.bp, self.bx], self.myName("QJBEP"), 0, self,paramdict= {'CJx':self.CJEP,'P':self.PS, 'M':self.MC,'F':self.FC, 'AJ' :self.AJC})
 
         #Diffuison Charges
         self.QDBE = QDBE([self.bi, self.ei], self.myName("QDBE"),0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         self.QDBC = QDBC([self.bx, self.ci], self.myName("QDBC"),0, self,paramdict=self.paramDict,variabledict=self.variableDict)
 
         #Quasi-Saturation Charges
-        #self.QBCX = QBC([self.bi, self.cx], self.myName("QBCX"),0, self, dict=self.paramDict)
-        #self.QBCI = QBC([self.bi, self.ci], self.myName("QBCI"),0, self, dict=self.paramDict)
+        #self.QBCX = QBC([self.bi, self.cx], self.myName("QBCX"),0, self, paramdict=self.paramDict)
+        #self.QBCI = QBC([self.bi, self.ci], self.myName("QBCI"),0, self, paramdict=self.paramDict)
 
         ### Stroeme Parasitischer Transistor
         # Parasitischer Transistor:
@@ -191,7 +192,8 @@ class NPN_VBIC(CompositeComponent):
         # Dioden-aehnliche Stroeme:
         self.IBCP = IBCP([self.si, self.bp], self.myName("IBCP"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
         self.IBEP = IBEP([self.bx, self.bp], self.myName("IBEP"), 0, self,paramdict=self.paramDict,variabledict=self.variableDict)
-        #self.QDBEP = QDBEP([self.bx, self.bp], self.myName("QDBEP"), 0, self,ParasitCurSource=self.ICCP)
+
+        #self.QDBEP = QDBEP([self.bx, self.bp], self.myName("QDBEP"), 0, self,ParasitCurSource=self.ICCP,paramdict=self.paramDict,variabledict=self.variableDict)
         '''
         Hilfswiderstaende:
         '''
@@ -206,14 +208,15 @@ class NPN_VBIC(CompositeComponent):
         #self.QJBC = Capacity([self.bi,self.ci],self.myName("QJBC"),1e-15,self)
         #self.QJBCP = Capacity([self.bp,self.si],self.myName("QJBCP"),1e-15,self)
         #self.QJBEP = Capacity([self.bp,self.bx],self.myName("QJBEP"),1e-15,self)
+        self.QDBEP = Capacity([self.bx, self.ci], self.myName("QDBEP"), 0.5e-15, self)
 
         #Diffuison Charges
         #self.QDBE = Capacity([self.bi,self.ei],self.myName("QDBE"),1e-15,self)
         #self.QDBC = Capacity([self.bx,self.ci],self.myName("QDBC"),1e-15,self)
 
         #Quasi-Saturation Charges
-        self.QBCX = Capacity([self.bi,self.cx],self.myName("QBCX"),1e-17,self)
-        self.QBCI = Capacity([self.bi,self.ci],self.myName("QBCI"),1e-17,self)
+        self.QBCX = Capacity([self.bi,self.cx],self.myName("QBCX"),1e-18,self)
+        self.QBCI = Capacity([self.bi,self.ci],self.myName("QBCI"),1e-18,self)
 
 
     def containsNonlinearity(self):
@@ -228,47 +231,47 @@ class NPN_VBIC(CompositeComponent):
         return self.IT.current
 
     def ditr_A(self):
-        return self.IT.itr/ (self.NR * self.UT)
+        return self.IT.itr/(self.NR * self.UT)
 
     def reloadParams(self):
         for v in self.variableDict:
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.PE = eval(self.paramDict.get("pe", "1"))
-        self.PC = eval(self.paramDict.get("pc", "1"))
-        self.ME = eval(self.paramDict.get("me", "1"))
-        self.MC = eval(self.paramDict.get("mc", "1"))
-        self.MS = eval(self.paramDict.get("ms", "1"))
-        self.FC = eval(self.paramDict.get("fc", "1"))
-        self.PS = eval(self.paramDict.get("ps", "1"))
-        self.AJE = eval(self.paramDict.get("aje", "1"))
-        self.AJS = eval(self.paramDict.get("ajs", "1"))
-        self.AJC = eval(self.paramDict.get("ajc", "1"))
+        self.PE = eval(self.paramDict.get("pe", "0.9"))
+        self.PC = eval(self.paramDict.get("pc", "0.9"))
+        self.ME = eval(self.paramDict.get("me", "0.105"))
+        self.MC = eval(self.paramDict.get("mc", "0.105"))
+        self.MS = eval(self.paramDict.get("ms", "0.105"))
+        self.FC = eval(self.paramDict.get("fc", "0.97"))
+        self.PS = eval(self.paramDict.get("ps", "0.97"))
+        self.AJE = eval(self.paramDict.get("aje", "-0.5"))
+        self.AJS = eval(self.paramDict.get("ajs", "-0.5"))
+        self.AJC = eval(self.paramDict.get("ajc", "-0.5"))
         self.WBE = eval(self.paramDict.get("wbe", "1"))
-        self.CJE = eval(self.paramDict.get("cje", "1"))
-        self.CJC = eval(self.paramDict.get("cjc", "1"))
-        self.CJCP = eval(self.paramDict.get("cjcp", "1"))
-        self.CJEP = eval(self.paramDict.get("cjep", "1"))
+        self.CJE = eval(self.paramDict.get("cje", "9.7E-15"))
+        self.CJC = eval(self.paramDict.get("cjc", "8E-16"))
+        self.CJCP = eval(self.paramDict.get("cjcp", "8E-15"))*0.3
+        self.CJEP = eval(self.paramDict.get("cjep", "4.2E-15"))*0.3
 
         #self.QJBEX.setNewParamsAndVariablesDicts({'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
         #                                        'FAK': (1 - self.WBE)},dict())
         self.QJBE.setNewParamsAndVariablesDicts({'CJx':self.CJE,'P': self.PE, 'M': self.ME, 'F': self.FC, 'AJ': self.AJE,
                                                'FAK': self.WBE},dict())
         self.QJBC.setNewParamsAndVariablesDicts({'CJx':self.CJE,'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
-        self.QJBCP.setNewParamsAndVariablesDicts({'CJx':self.CJCP,'P': self.PS, 'M': self.MS, 'F': self.FC, 'AJ': self.AJS},dict())
-        self.QJBEP.setNewParamsAndVariablesDicts({'CJx':self.CJEP,'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
+        #self.QJBCP.setNewParamsAndVariablesDicts({'CJx':self.CJCP,'P': self.PS, 'M': self.MS, 'F': self.FC, 'AJ': self.AJS},dict())
+        #self.QJBEP.setNewParamsAndVariablesDicts({'CJx':self.CJEP,'P': self.PC, 'M': self.MC, 'F': self.FC, 'AJ': self.AJC},dict())
 
         # Diffuison Charges
         self.QDBE.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
         self.QDBC.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
 
-        re = eval(self.paramDict.get("re", "1"))
-        rbx = eval(self.paramDict.get("rbx", "1"))
-        rcx = eval(self.paramDict.get("rcx", "1"))
-        rbp = eval(self.paramDict.get("rbp", "1"))
-        rs = eval(self.paramDict.get("rs", "1"))
-        rbi = eval(self.paramDict.get("rbi", "1"))
+        re = eval(self.paramDict.get("re", "5.3"))
+        rbx = eval(self.paramDict.get("rbx", "8"))
+        rcx = eval(self.paramDict.get("rcx", "6.5"))
+        rbp = eval(self.paramDict.get("rbp", "10"))
+        rs = eval(self.paramDict.get("rs", "50"))
+        rbi = eval(self.paramDict.get("rbi", "20"))
 
         self.RE.setParameterOrVariableValue("R",re)
         self.RBX .setParameterOrVariableValue("R", rbx)
@@ -283,8 +286,7 @@ class NPN_VBIC(CompositeComponent):
         self.IBE.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
         self.IBC.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
         # self.IBEX = IBE([self.bx, self.ei], self.myName("IBEX"), 0, self, isExternal=True,dict=self.paramDict) #wird bei ihp nicht mit-simuliert
-        self.IRCI.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
-        # self.bypassIRCI = Resistor([self.cx, self.ci], self.myName("RByP"), 100, self)
+        #self.IRCI.setNewParamsAndVariablesDicts(self.paramDict,self.variableDict)
 
         ### Stroeme Parasitischer Transistor
         # Parasitischer Transistor:

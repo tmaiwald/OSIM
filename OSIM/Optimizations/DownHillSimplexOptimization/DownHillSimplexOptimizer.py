@@ -51,15 +51,15 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
         self.sigma = 1/2
         self.edges = list()
         self.olist = olist
-        self.m = np.zeros((len(olist),1),dtype=np.float)
+        self.m = np.zeros(len(olist),dtype=np.float)
         self.maxIter = 100
         self.emptyResult = empytResult
         self.costFunction = costFunction
         self.oldworstCost = 100
-        self.CircuitSysEq = CircuitSysEq
+        self.CircuitSysEq = CircuitSysEq#
+        self.initial_mean_distance_to_best = 1e298
 
      def run(self):
-        print(len(self.edges))
 
         if(len(self.edges) == 0): #in case no edges are set yet
             #1) waehle N+1 Anfangspunkte x_{0},x_{1},.....,x_{N} Element {R} ^{N}}, die den Simplex bilden
@@ -68,12 +68,16 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
                 self.edges.append(e)
                 self.printEdges()
                 e.calcCost()
+        self.edges = sorted(self.edges, cmp=lambda x, y: cmp(x.getCost(), y.getCost()))
+
+        d = 0
+        for e in self.edges:
+            d+= np.linalg.norm(self.edges[0].getEdgeValues()-e.getEdgeValues())
+        self.initial_mean_distance_to_best = d/(len(self.edges)-1)
 
         #Quelle: http://www.mathematik.uni-wuerzburg.de/~kanzow/books/NelMead.pdf
         iteration = 0
         while((not self.isCompleted()) and iteration < self.maxIter):
-
-            print("Iteration %i"%(iteration))
 
             iteration += 1
             #2) sortiere die Punkte nach dem Wert der Zielfunktion  f, so dass x_{0} der beste, x_{N-1}
@@ -83,9 +87,11 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
             self.printEdges()
 
             #3) bilde von allen ausser dem schlechtesten Punkt den Mittelpunkt m = 1/N *SUM(xi,0,N-1).
-            self.m = np.zeros((len(self.edges)-1,1),dtype=np.float64)
+            self.m = np.zeros(len(self.edges)-1,dtype=np.float64)
             for i in range(len(self.edges)-1):
-                self.m +=self.edges[i].getEdgeValues()
+                print(self.m)
+                print(self.edges[i].getEdgeValues())
+                self.m += self.edges[i].getEdgeValues()
             self.m = self.m/(len(self.edges)-1)
 
             #4) reflektiere den schlechtesten Punkt am Mittelpunkt: r = (1+alpha)*m - alpha*x_N
@@ -144,15 +150,24 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
         return results
 
      def isCompleted(self):
+
+        self.edges = sorted(self.edges, cmp=lambda x, y: cmp(x.getCost(), y.getCost()))
         # finish optimization if worst cost is 0.01% away from best
+
         worstCost = self.edges[-1].getCost()
         bestCost = self.edges[0].getCost()
 
         self.printEdges()
 
-        print("isfinished ?: %G < %G"%(np.absolute(worstCost-bestCost)/np.absolute(bestCost),self.eps))
+        d = 0
+        for e in self.edges:
+            d += np.linalg.norm(self.edges[0].getEdgeValues()-e.getEdgeValues())
+        mean_dist = d/(len(self.edges)-1)
+        dispercent = (mean_dist/self.initial_mean_distance_to_best)*100 # Percent
+        #print ("winkel bester und schlechtester : %G"%(winkel_rad))
+        print("isfinished ?: %G < %G , dist: %G"%(np.absolute(worstCost-bestCost)/np.absolute(bestCost),self.eps,dispercent))
 
-        if np.absolute(worstCost-bestCost)/np.absolute(bestCost) < self.eps and not self.oldworstCost == worstCost:
+        if np.absolute(worstCost-bestCost)/np.absolute(bestCost) < self.eps and dispercent < 1 and not self.oldworstCost == worstCost:
             print("True!")
             return True
         else:
@@ -184,10 +199,10 @@ class DownHillSimplexOptimizer(AbstractOptimizer):
 
          for i in range(numofedges):
              optis = resultList[i].getOptimizables()
-             ## 5% Rauschen auf die Ecken, um zu vermeiden, dass Startwerte alle gleich sind
+             ## 20% Rauschen auf die Ecken, um zu vermeiden, dass Startwerte alle gleich sind
              for o in optis:
                  v = o.getValue()
-                 o.setValue(rand.uniform(v-(0.05*v),v+(0.05*v)))
+                 o.setValue(rand.uniform(v-(0.2*v),v+(0.2*v)))
 
              e = SimplexEdge(self.costFunction,deepcopy(self.CircuitSysEq),optis,resultList[0].getNewInstance(),i)
              list_x = []

@@ -41,9 +41,9 @@ class ParasitTransportCurrent(NonlinearComponent):
         self.dubp = 0
 
     def setOPValues(self):
-
         self.performCalculations()
         self.opValues["S"] = self.dubx
+
 
     def initialSignIntoSysEquations(self):
         branchIdx = self.sys.compDict.get(self.name)
@@ -79,7 +79,7 @@ class ParasitTransportCurrent(NonlinearComponent):
     def getCurrent(self):
         return self.current
 
-    @jit
+    @jit(nogil=True)
     def performCalculations(self):
 
         ubx = self.sys.getSolutionAt(self.bx).real
@@ -98,7 +98,7 @@ class ParasitTransportCurrent(NonlinearComponent):
             self.dusi = (self.I_T(ubx,ubp,usi+self.diffh) - self.current)/self.diffh
             self.dubp = (self.I_T(ubx,ubp+self.diffh,usi) - self.current)/self.diffh
 
-    @jit
+    @jit(nogil=True)
     def I_T(self,BX,BP,SI):
 
         self.Itfp = self.ISP * (u.exp((BX-BP),1/(self.NFP*self.UT),BP) - 1.0)
@@ -106,6 +106,7 @@ class ParasitTransportCurrent(NonlinearComponent):
         self._qb(BP,BX)
         return (self.Itfp-self.Itrp)/self.qb
 
+    @jit(nogil=True)
     def _qb(self,BP,BX):
         if(BP < 0):
             q2p = self.ISP * (u.exp((BX),1/(self.NFP*self.UT),BP) - 1.0)

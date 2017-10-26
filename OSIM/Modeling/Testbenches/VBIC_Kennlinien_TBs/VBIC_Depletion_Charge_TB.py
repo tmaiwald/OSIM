@@ -8,7 +8,7 @@ from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 Nx = 1
 vbic_cje_mm = 3
 vbic_cje = 1
-CJx = 9.7E-15*(Nx*0.25)**0.95*vbic_cje*(1+(vbic_cje_mm-1)/np.sqrt(Nx)) # CJE
+CJx = 9.7E-15*(1*0.25)**0.95*1*(1+(1-1)/np.sqrt(1)) # CJE
 P = 0.9 # PE
 M = 0.105 # ME
 AJ = -0.5 # AJE
@@ -32,16 +32,26 @@ F = 0.97 # FC
 bx = "bx"
 ei = "ei"
 
-QJBE = VBIC_DepletionCharge([bx, ei],"QJ", CJx, None, dict= {'P':P,'M':M,'F':F,'AJ':AJ,'FAK':WBx})
+QJBE = VBIC_DepletionCharge([bx, ei],"QJ", 0, None, dict= {'CJx':CJx,'P':P,'M':M,'F':F,'AJ':AJ,'FAK':WBx})
 TBSys = CircuitSystemEquations([QJBE])
 x = np.arange(-1, 2, 0.001)
-charge = np.zeros((len(x), 1), dtype=np.complex128)
-capacity = np.zeros((len(x), 1), dtype=np.complex128)
+charge = np.zeros((len(x), 1), dtype=np.float32)
+capacity = np.zeros((len(x), 1), dtype=np.float32)
 
 for idx, v in enumerate(x):
     TBSys.x[TBSys.compDict.get(bx)] = v
     charge[idx] = QJBE.getCharge()
     capacity[idx] = QJBE.dQdU_A()
+
+toFile = open("QJE_Ladung.csv", 'w')
+
+for i in range (len(x)):
+	t = str(x[i])
+	plot = str(charge[i][0])
+	wline = "".join((t,",",plot,"\n"))
+	toFile.write(wline)
+
+toFile.close()
 
 plt.plot(x, charge , label="charge")
 plt.plot(x, capacity, label="capacity")

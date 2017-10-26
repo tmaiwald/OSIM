@@ -20,11 +20,13 @@ class IBEP(NonlinearComponent):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec (variableExpr)
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.IBEIP = eval(self.paramDict.get("ibeip", "1"))
-        self.IBENP = eval(self.paramDict.get("ibenp", "1"))
+        self.IBEIP = eval(self.paramDict.get("ibeip", "4E-19"))
+        self.IBENP = eval(self.paramDict.get("ibenp", "2E-14"))
         self.NCN = eval(self.paramDict.get("ncn", "1"))
         self.NCI = eval(self.paramDict.get("nci", "1"))
         self.Udlim = eval(self.paramDict.get("Udlim", "1.5"))
+
+
 
     @jit
     def performCalculations(self):
@@ -44,9 +46,10 @@ class IBEP(NonlinearComponent):
         for v in self.variableDict:
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec (variableExpr)
+
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.IBEIP = eval(self.paramDict.get("ibeip", "1"))
-        self.IBENP = eval(self.paramDict.get("ibenp", "1"))
+        self.IBEIP = eval(self.paramDict.get("ibeip", "4E-19"))
+        self.IBENP = eval(self.paramDict.get("ibenp", "2E-14"))
         self.NCN = eval(self.paramDict.get("ncn", "1"))
         self.NCI = eval(self.paramDict.get("nci", "1"))
         self.Udlim = eval(self.paramDict.get("Udlim", "1.5"))

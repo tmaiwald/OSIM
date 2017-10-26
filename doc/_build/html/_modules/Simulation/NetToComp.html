@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Simulation.NetToComp &#8212; OSIM 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Simulation.NetToComp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Use the triangle class to represent triangles.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.Capacity</span> <span class="k">import</span> <span class="n">Capacity</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.CurrentSource</span> <span class="k">import</span> <span class="n">CurrentSource</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.Diode</span> <span class="k">import</span> <span class="n">Diode</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.Inductance</span> <span class="k">import</span> <span class="n">Inductance</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.Port</span> <span class="k">import</span> <span class="n">Port</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.Resistor</span> <span class="k">import</span> <span class="n">Resistor</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">Utils</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">from</span> <span class="nn">OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.NPN_VBIC</span> <span class="k">import</span> <span class="n">NPN_VBIC</span>
+
+<div class="viewcode-block" id="NetToComp"><a class="viewcode-back" href="../../Simulation.html#Simulation.NetToComp.NetToComp">[docs]</a><span class="k">class</span> <span class="nc">NetToComp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Beispielkommentar&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param filename:</span>
+<span class="sd">        :type filename:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="n">projRootFold</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">getDirectory</span><span class="p">()</span>
+        <span class="n">netListFile</span> <span class="o">=</span> <span class="n">filename</span><span class="c1">#os.path.join(os.path.abspath(&#39;../&#39;),filename)#&quot;&quot;.join((projRootFold,&quot;/__Circuits/&quot;,filename))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spice_netlist</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">netListFile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCommentsFromNetlist</span><span class="p">(</span><span class="n">netListFile</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spice_netlist</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span><span class="s1">&#39;P&#39;</span><span class="p">]:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">nodefrom</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">nodeto</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">Resistor</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span>
+                    <span class="c1">#r = VoltageSource([nodefrom, nodeto], name, value, None)</span>
+                    <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stringArrToDict</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+                    <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseCommentsToArgs</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="n">comments</span><span class="p">,</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">Port</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">paramdict</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;I&#39;</span><span class="p">:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">CurrentSource</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+                    <span class="n">l</span> <span class="o">=</span> <span class="n">Inductance</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">Capacity</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;Diode_std.comp&quot;</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">Diode</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span> <span class="n">pParams</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;Q&#39;</span><span class="p">:</span>
+                    <span class="c1">#npn = NPNTransistor_SGP([arr[1], arr[2], arr[3]], name, arr[4], None, pParams=&quot;__Parameter/NPN_Gummel_BC547B.comp&quot;)</span>
+                    <span class="c1">#npn = NPNEasy_SGP([arr[1], arr[2], arr[3]], name, arr[4])</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NPN_VBIC_npn13G2.comp&#39;</span><span class="p">)</span>
+                    <span class="n">addargs</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">parseCommentsToArgs</span><span class="p">(</span><span class="nb">dict</span><span class="p">(),</span><span class="n">comments</span><span class="p">,</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">npn</span> <span class="o">=</span> <span class="n">NPN_VBIC</span><span class="p">([</span><span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;0&#39;</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">arr</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pParams</span><span class="o">=</span><span class="n">path</span><span class="p">,</span><span class="n">addargs</span> <span class="o">=</span> <span class="n">addargs</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">npn</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;K&#39;</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                    <span class="c1">#k = VoltageDependentCurrentSource([nodefrom, nodeto], name, value, None)</span>
+                    <span class="c1">#self.components.append(k)</span>
+                <span class="k">elif</span> <span class="n">d</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span>
+                    <span class="c1">#nodes, name, voltage, seriesImpedance</span>
+                    <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stringArrToDict</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="n">Port</span><span class="p">([</span><span class="n">nodefrom</span><span class="p">,</span> <span class="n">nodeto</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">paramdict</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="NetToComp.getComponents"><a class="viewcode-back" href="../../Simulation.html#Simulation.NetToComp.NetToComp.getComponents">[docs]</a>    <span class="k">def</span> <span class="nf">getComponents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a triangle with sides of lengths `a`, `b`, and `c`.</span>
+
+<span class="sd">        Raises `ValueError` if the three length values provided cannot</span>
+<span class="sd">        actually form a triangle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span></div>
+
+<div class="viewcode-block" id="NetToComp.parseCommentsToArgs"><a class="viewcode-back" href="../../Simulation.html#Simulation.NetToComp.NetToComp.parseCommentsToArgs">[docs]</a>    <span class="k">def</span> <span class="nf">parseCommentsToArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">args</span><span class="p">,</span><span class="n">commentList</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commentList</span><span class="p">:</span>
+            <span class="n">name_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="p">(</span><span class="n">name_args</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">n2</span> <span class="o">==</span> <span class="n">name</span><span class="p">):</span>
+                <span class="n">arges</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;|</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">name_args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arges</span><span class="p">:</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">):</span>
+                       <span class="n">param_val</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+                       <span class="n">args</span><span class="p">[</span><span class="n">param_val</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">=</span><span class="n">param_val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">args</span></div>
+
+
+<div class="viewcode-block" id="NetToComp.getCommentsFromNetlist"><a class="viewcode-back" href="../../Simulation.html#Simulation.NetToComp.NetToComp.getCommentsFromNetlist">[docs]</a>    <span class="k">def</span> <span class="nf">getCommentsFromNetlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">netListFile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a triangle with sides of lengths `a`, `b`, and `c`.</span>
+
+<span class="sd">        Raises `ValueError` if the three length values provided cannot</span>
+<span class="sd">        actually form a triangle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">comments</span> <span class="o">=</span><span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">netListFile</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                    <span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">comments</span></div>
+
+
+<div class="viewcode-block" id="NetToComp.stringArrToDict"><a class="viewcode-back" href="../../Simulation.html#Simulation.NetToComp.NetToComp.stringArrToDict">[docs]</a>    <span class="k">def</span> <span class="nf">stringArrToDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strArr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a triangle with sides of lengths `a`, `b`, and `c`.</span>
+
+<span class="sd">        Raises `ValueError` if the three length values provided cannot</span>
+<span class="sd">        actually form a triangle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">args</span> <span class="o">=</span><span class="p">{}</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strArr</span><span class="p">:</span>
+            <span class="k">if</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">):</span>
+                <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">=</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">args</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Tim Maiwald.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

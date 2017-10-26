@@ -14,9 +14,6 @@ class NPNTransistor_SGP(CompositeComponent):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         super(NPNTransistor_SGP, self).__init__(nodes, name, value, superComponent, **kwargs)
 
-        print ("hiersn")
-        print (self.paramDict)
-
         self.b = self.nodes[1]
         self.c = self.nodes[0]
         self.e = self.nodes[2]

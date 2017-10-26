@@ -15,7 +15,7 @@ def getSPAnalysis_linx(sys,f_from, f_to, f_step,observeList):
 def getSPAnalysis_semilogx(sys,dec_from, dec_to, f_perDec,observeList):
 
     fs = list()
-    for i in range(dec_from,dec_to+1):#decades
+    for i in range(dec_from,dec_to):#decades
         fs += (range((10 ** i), (10 ** (i+1)), 10**i/f_perDec))
 
     a = np.asarray(fs, dtype=np.int64)
@@ -32,7 +32,7 @@ def getSPAnalysis(sys, fs,observeList):
             portnames.append(b.name)
 
     if len(ports) == 0:
-        print ("Error: No Ports in Netlist !")
+        print("Error: No Ports in Netlist !")
         return
 
     sys.atype = CircuitSystemEquations.ATYPE_AC
@@ -41,7 +41,7 @@ def getSPAnalysis(sys, fs,observeList):
     resMat = np.zeros((len(ports)+1,numbOfFreqs), dtype=np.complex128)
 
     for pIdx,port in enumerate(ports):
-        print(pIdx)
+
         ###anregende Spannungsquelle normieren:
         for b in sys.components:
             for c in b.internalComponents:
@@ -59,7 +59,7 @@ def getSPAnalysis(sys, fs,observeList):
                     c.doStep(f)
 
                 sys.x = np.linalg.solve(sys.A + sys.J, sys.b)
-                Zout = (port.voltageOverMe()/port.myBranchCurrent())[0]
+                Zout = (port.voltageOverMe()/port.myBranchCurrent())
                 resMat[pIdx+1,i] = (Zout-port.innerImpedance)/(port.innerImpedance+Zout)
 
     return [resMat,ports,"S11"]

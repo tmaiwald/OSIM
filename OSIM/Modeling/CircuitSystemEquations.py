@@ -14,7 +14,8 @@
 #
 #
 
-import numpy as np
+import scipy as np
+from scipy.sparse import csc_matrix
 
 class CircuitSystemEquations(object):
     """Class that contains the main data structures for a curcuit"""
@@ -27,10 +28,10 @@ class CircuitSystemEquations(object):
     ATYPE_DC   = 2
     ATYPE_AC   = 3
     ATYPE_TRAN = 4
-    ATYPE_EST_DC = 5
 
     def __init__(self, components):
 
+        self.GMIN = 1e-11
         self.curNewtonIteration = 0
         self.atype = CircuitSystemEquations.ATYPE_NONE
         self.components = components
@@ -45,10 +46,17 @@ class CircuitSystemEquations(object):
         self.n = len(self.compDict)#nnodes + nbranches  # Anzahl der Gleichunhen
         self.x = np.zeros(self.n, dtype=np.complex128)
         self.g = np.zeros(self.n, dtype=np.complex128)
-        self.A = np.zeros((self.n, self.n), dtype=np.complex128)
-        self.J = np.zeros((self.n, self.n), dtype=np.complex128)
+
+        #if the system contains too much unknowns, use sparse matrices
+        if (self.n < 1000):
+            self.A = np.zeros((self.n, self.n), dtype=np.complex128)
+            self.J = np.zeros((self.n, self.n), dtype=np.complex128)
+        else:
+            self.A = csc_matrix(np.zeros((self.n, self.n), dtype=np.complex128))
+            self.J = csc_matrix(np.zeros((self.n, self.n), dtype=np.complex128))
+
         self.b = np.zeros(self.n, dtype=np.complex128)
-        self.xprev = np.zeros((self.n, 1), dtype=np.complex128)
+        self.xprev = np.zeros(self.n, dtype=np.complex128)
         self.tnow = 0
         self.told = 0
 
@@ -74,12 +82,18 @@ class CircuitSystemEquations(object):
         self.atype = self.ATYPE_NONE
 
         self.n = len(self.compDict)#nnodes + nbranches  # Anzahl der Gleichunhen
-        self.x = np.zeros((self.n, 1), dtype=np.complex128)
-        self.g = np.zeros((self.n, 1), dtype=np.complex128)
-        self.A = np.zeros((self.n, self.n), dtype=np.complex128)
-        self.J = np.zeros((self.n, self.n), dtype=np.complex128)
-        self.b = np.zeros((self.n, 1), dtype=np.complex128)
-        self.xprev = np.zeros((self.n, 1), dtype=np.complex128)
+        self.x = np.zeros(self.n, dtype=np.complex128)
+        self.g = np.zeros(self.n, dtype=np.complex128)
+
+        if(self.n < 1000):
+            self.A = np.zeros((self.n, self.n), dtype=np.complex128)
+            self.J = np.zeros((self.n, self.n), dtype=np.complex128)
+        else:
+            self.A = csc_matrix(np.zeros((self.n, self.n), dtype=np.complex128))
+            self.J = csc_matrix(np.zeros((self.n, self.n), dtype=np.complex128))
+
+        self.b = np.zeros(self.n, dtype=np.complex128)
+        self.xprev = np.zeros(self.n, dtype=np.complex128)
 
         for c in self.components:
             c.initialSignIntoSysEquations()
@@ -92,6 +106,7 @@ class CircuitSystemEquations(object):
         :return: solution
         :rtype: complex
         """
+
         return self.x[self.compDict.get(componentName)]
 
     def setSolutionAt(self,name,val):

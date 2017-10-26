@@ -22,8 +22,8 @@ class IBCP(NonlinearComponent):
             exec (variableExpr)
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.IBCIP = eval(self.paramDict.get("ibcip", "1"))
-        self.IBCNP = eval(self.paramDict.get("ibcnp", "1"))
+        self.IBCIP = eval(self.paramDict.get("ibcip", "2E-15"))
+        self.IBCNP = eval(self.paramDict.get("ibcnp", "5E-15"))
         self.NCIP = eval(self.paramDict.get("ncip", "1"))
         self.NCNP = eval(self.paramDict.get("ncnp", "1"))
         self.Udlim = eval(self.paramDict.get("Udlim", "1.5"))
@@ -49,8 +49,8 @@ class IBCP(NonlinearComponent):
             exec (variableExpr)
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.IBCIP = eval(self.paramDict.get("ibcip", "1"))
-        self.IBCNP = eval(self.paramDict.get("ibcnp", "1"))
+        self.IBCIP = eval(self.paramDict.get("ibcip", "2E-15"))
+        self.IBCNP = eval(self.paramDict.get("ibcnp", "5E-15"))
         self.NCIP = eval(self.paramDict.get("ncip", "1"))
         self.NCNP = eval(self.paramDict.get("ncnp", "1"))
         self.Udlim = eval(self.paramDict.get("Udlim", "1.5"))

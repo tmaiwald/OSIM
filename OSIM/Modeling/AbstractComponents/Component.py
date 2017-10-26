@@ -49,27 +49,27 @@ class Component(object):
 
     @abc.abstractmethod
     def reloadParams(self):
-        print (self.name + ": Abstract Component: reloadParams(...) not Implemented here")
+        print(self.name + ": Abstract Component: reloadParams(...) not Implemented here")
 
     @abc.abstractmethod
     def setParameterOrVariableValue(self, name, value):
-        print (self.name + ": Abstract Component: setParameterValue(...) not Implemented here")
+        print(self.name + ": Abstract Component: setParameterValue(...) not Implemented here")
 
     @abc.abstractmethod
     def setOPValues(self):
         self.opValues["value"] = self.value
 
     def printMyOPValues(self):
-        print (self.name)
-        print (self.opValues)
+        print(self.name)
+        print(self.opValues)
 
     @abc.abstractmethod
     def getValue(self):
-        print (self.name + ": Abstract Component: getValue() not Implemented here")
+        print(self.name + ": Abstract Component: getValue() not Implemented here")
 
     @abc.abstractmethod
     def setValue(self, value):
-        print (self.name + ": Abstract Component: setValue() not Implemented here")
+        print(self.name + ": Abstract Component: setValue() not Implemented here")
 
     def getNodes(self):
         return self.nodes
@@ -103,7 +103,7 @@ class Component(object):
         :param freq_or_tau: frequency or timestep value depending on simulation type
         :type freq_or_tau: float
         """
-        print (self.name + ": Abstract Component: doStep() not Implemented here")
+        print(self.name + ": Abstract Component: doStep() not Implemented here")
 
     def putA(self, A, node, myIdx, nm, mn):
         A[node, myIdx] = nm
@@ -116,7 +116,7 @@ class Component(object):
 
     @abc.abstractmethod
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
-        print (self.name + ": Abstract Component: getAdmittance() not Implemented here")
+        print(self.name + ": Abstract Component: getAdmittance() not Implemented here")
         return 0
 
     def Udiff(self, twonodes):
@@ -140,11 +140,11 @@ class Component(object):
                 if n is not '0':
                     c.sys.A[nodeIdx, branchIdx] = algebraicSign * 1
                     c.sys.A[branchIdx, branchIdx] = -1
-                    c.sys.A[branchIdx, nodeIdx] = algebraicSign * (c.getAdmittance(c.nodes, 0)+Component.GMIN)
+                    c.sys.A[branchIdx, nodeIdx] = algebraicSign * (c.getAdmittance(c.nodes, 0)+ self.sys.GMIN)
                 algebraicSign = algebraicSign * -1
 
-    def insertAdmittanceintoSystem(self, freq):
 
+    def insertAdmittanceintoSystem(self, freq):
         adm = self.getAdmittance(self.nodes, freq)+Component.GMIN
         x1v = 0
         x2v = 0

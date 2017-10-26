@@ -8,10 +8,10 @@ from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 from OSIM.Simulation.CircuitAnalysis.CircuitAnalyser import CircuitAnalyser
 
 #QJBE
-Nx = 1
+
 vbic_cje_mm = 1
 vbic_cje = 1
-CJx = 9.7E-15*(Nx*0.25)**0.95*vbic_cje*(1+(vbic_cje_mm-1)/np.sqrt(Nx)) # CJE
+CJx = 9.7E-15*(1*0.25)**0.95*1*(1+(1-1)/np.sqrt(1)) # CJE#9.7E-15*(Nx*0.25)**0.95*vbic_cje*(1+(vbic_cje_mm-1)/np.sqrt(Nx)) # CJE
 P = 0.9 # PE
 M = 0.105 # ME
 AJ = -0.5 # AJE
@@ -23,9 +23,9 @@ sigin = '1'
 sigout = '2'
 ik = '3'
 
-vsource = VoltageSource([gnd,sigin],"V1",0,None,dict={'FUNC':'SIN','F':'1e11', 'DC':'0', 'AC':'1', 'P':'180'})
+vsource = VoltageSource([gnd,sigin],"V1",0,None,paramdict={'FUNC':'SIN','F':'1e11', 'DC':'0', 'AC':'1', 'P':'180'})
 r1 = Resistor([sigin,sigout],"R1",0.00001,None)
-c = VBIC_DepletionCharge([sigout, ik],"QJ", CJx, None, dict= {'P':P,'M':M,'F':F,'AJ':AJ,'FAK':WBx})
+c = VBIC_DepletionCharge([sigout, ik],"QJ", CJx, None, paramdict= {'P':P,'M':M,'F':F,'AJ':AJ,'FAK':WBx})
 cref = Capacity([sigout, ik],"CR",0.35e-14, None)
 r2 = Resistor([ik,gnd],"R2",1000,None)
 

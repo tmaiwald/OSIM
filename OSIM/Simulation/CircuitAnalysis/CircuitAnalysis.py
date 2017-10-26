@@ -1,10 +1,11 @@
+from __future__ import print_function
 from copy import deepcopy
 import matplotlib.pyplot as plt
 import mpl_toolkits.axisartist as AA
 from scipy.sparse import csr_matrix
 
 from scipy.sparse.linalg import spsolve
-import numpy as np
+import scipy as np
 from mpl_toolkits.axes_grid1 import host_subplot
 from numba import jit
 
@@ -36,11 +37,11 @@ class CircuitAnalysis(object):
             if b.containsNonlinearity():
                 b.doStep(0)
 
-
     def show(self):
         self.sys.reset()
 
     @staticmethod
+    @jit(nogil=True)
     def subNewtonRaphson(xvorher,sys,d_old,move_old,Vmax):
         '''
         ### Schrittweitenreduktion:
@@ -50,7 +51,8 @@ class CircuitAnalysis(object):
         ## Abstand zu Nullstelle laesst sich mit Hilfe der euklidischen Distanz im n-dimensionalen Raum bestimmen
         '''
 
-        fxp1 = np.dot(sys.A,sys.x)+sys.g-sys.b
+        fxp1 = sys.A.dot(sys.x)+sys.g-sys.b
+
         d = np.linalg.norm(fxp1)
         if(DEBUG):
             print("   1) d = %G"%(d))
@@ -65,8 +67,8 @@ class CircuitAnalysis(object):
             return move_len,d
 
         while(subi < max_sub_i):
-
-            fxp1 = np.dot(sys.A,x_work)+sys.g-sys.b
+            #print("SNR: %i" % (subi))
+            fxp1 = sys.A.dot(x_work)+sys.g-sys.b
             d = np.linalg.norm(fxp1)
             max = np.amax(np.absolute(x_work))
 
@@ -83,33 +85,27 @@ class CircuitAnalysis(object):
                 estx = xvorher+move_vec
                 sys.x = estx
                 CircuitAnalysis.nonlin(sys)
-                x_work = np.linalg.solve(sys.A + sys.J,np.dot(sys.J,estx)-sys.g+sys.b)
 
-                if(DEBUG):
-                    print("   2) d = %G at subi = %i"%(d,subi))
-                    print("   move_old_ %G"%(move_old))
-                    print("   move_len %G"%(np.linalg.norm(move_vec)))
-                    print("   amax: "+str(np.amax(x_work)))
-                    a = np.argmax(estx)
-                    print("   argmax: "+str(np.argmax(x_work)))
-                    for k in sys.compDict:
-                        if(sys.compDict[k] == a):
-                            print ("   Name: %s"%(k))
-                    #x = raw_input()
+                #if sys.A.shape[0] > 300:
+                    ##SparseMatrixCalculations
+                if sys.n > 1000:
+                    A = sys.A + sys.J
+                    b = sys.J.dot(estx) - sys.g + sys.b
+                    x_work = spsolve(A, b, permc_spec="NATURAL")
+                else:
+                    x_work = np.linalg.solve(sys.A + sys.J, np.dot(sys.J, estx) - sys.g + sys.b)
 
                 subi += 1
-        #print("   kein Erfolg")
-        #print("   subi: %i move_len: %G"%(subi,move_old))
+
         sys.x = xvorher-move_vec
         return move_old,d
-
 
     @staticmethod
     @jit(nogil=True)
     def newtonRaphson(sys):
         eps = 1e-9  # Abbruchkriterium
         relDif = np.amax(np.absolute(sys.b))*eps
-        imax = CircuitAnalysis.MAX_NEWTON_ITERATIONS# maximale Iterationszahl "sollte mit jeder Iteration eine Stelle nach dem Komma genauer werden[UEBERPRUEFE !]"
+        imax = CircuitAnalysis.MAX_NEWTON_ITERATIONS
         i = 0  # Iterationsnummer
         ungenau = True
         wenig_iterationen = True
@@ -120,20 +116,6 @@ class CircuitAnalysis(object):
 
         Vmax = np.amax(np.absolute(sys.b))
 
-        if(DEBUG):
-            a = np.argmax(np.absolute(sys.x))
-            for k in sys.compDict:
-                if(sys.compDict[k] == a):
-                    print ("Vmax= %G at: %s"%(Vmax,k))
-
-        #for Debug:
-        #its = np.asarray([x for x in range(imax)],dtype=np.double)
-        #functionValues = np.zeros_like(its)
-        #movelens = np.zeros_like(its)
-        #max_vals = np.zeros_like(its)
-        #difs = np.zeros_like(its)
-        #max_names = []
-
         while (ungenau and wenig_iterationen):
 
             xvorher = sys.x
@@ -142,21 +124,12 @@ class CircuitAnalysis(object):
 
             CircuitAnalysis.nonlin(sys)
 
-            ##SparseMatrixCalculations
-            A = csr_matrix(sys.A + sys.J)
-            b = np.dot(sys.J,sys.x)-sys.g+sys.b
-            sys.x = spsolve(A.tocsc(), b,permc_spec="NATURAL")
-
-            #sys.x = np.linalg.solve(sys.A + sys.J,np.dot(sys.J,sys.x)-sys.g+sys.b)
-
-            '''
-            for v in range(sys.x.shape[0]):
-                if(np.absolute(sys.x[v]) > Vmax):
-                    if(sys.x[v]>0):
-                        sys.x[v] = Vmax
-                    else:
-                        sys.x[v] = -Vmax
-            '''
+            if(sys.n > 1000):
+                A = sys.A + sys.J
+                b = sys.J.dot(sys.x) - sys.g + sys.b
+                sys.x = spsolve(A, b,permc_spec="NATURAL")
+            else:
+                sys.x = np.linalg.solve(sys.A + sys.J,np.dot(sys.J,sys.x)-sys.g+sys.b)
 
             movelen,d = CircuitAnalysis.subNewtonRaphson(xvorher,sys,d,movelen,Vmax)
 
@@ -164,36 +137,15 @@ class CircuitAnalysis(object):
             wenig_iterationen = (i < imax)
             ungenau =  d > relDif or (dif > relDif) #eps)# and (d > eps)
 
-
-            #functionValues[i-1] = d
-            #movelens[i-1] = movelen
-            #a = np.argmax(np.absolute(sys.x))
-            #for k in sys.compDict:
-            # if(sys.compDict[k] == a):
-            #    max_names.append(k)
-            #max_vals[i-1] = np.amax(np.absolute(sys.x))
-            #difs[i-1] = dif
-            #if(DEBUG):
-            #   debugNewton(sys,d,i,movelen)
-
-            if( i > 60):
-                print(i)
+            #print("NR: %i"%(i))
+            if( i > 50):
+                print("Newton: Iteration: "+str(i)+"     ",end='\r')
             if i == imax:
-                if(DEBUG and PLOT):
-                    pass
-                    #CircuitAnalysis.plotNewtonStats(movelens,its,functionValues,max_vals,max_names,difs,i)
                 sys.x = np.copy(x_backup)
                 print ("Newton-Raphson convergence failure")
                 #raise NRConvergenceException()
 
-
-        #print("##############Konvergenz nach: %i Iterationen###############"%(i))
-        if(DEBUG and i > 2):
-
-            if(PLOT):
-                pass
-                #CircuitAnalysis.plotNewtonStats(movelens,its,functionValues,max_vals,max_names,difs,i)
-
+        print("                                                              ", end='\r')
         return [sys.A,sys.x,sys.J,i]
 
     def plot(self, xArray, solutionndArray, obsNames):

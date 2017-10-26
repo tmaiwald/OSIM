@@ -35,11 +35,11 @@ params = dict()
 params["Nx"] = "1"
 params["ut"] = "0.026"
 params["temp"] = "27"
-params["tf"] = "2.67E-13*vbic_tf*(1+(vbic_tf_mm-1)/np.sqrt(Nx))*((temp+273)/300)**0.7"
+params["tf"] = "2.67E-13*1*(1+(1-1)/np.sqrt(1))*((27+273)/300)**0.7"
 params["qtf"] = "1E-18"
 params["xtf"] = "20"
 params["vtf"] = "10"
-params["itf"] = "0.4*(Nx*0.25)"
+params["itf"] = "0.4*(1*0.25)"
 
 
 dummyIT = dummyMainTransportCurrent()
@@ -55,9 +55,9 @@ capacity = np.zeros((len(x), 1), dtype=np.complex128)
 
 for idx, v in enumerate(x):
     #vsource.changeMyVoltageInSys(v)
-    dummyIT.IT.itf += 0.1e-3
+    dummyIT.IT.itf += 0.2e-3
     ca.calcDCOperatingPoint()
-    charge[idx] = Q_DBE.TFF(v)#Q_DBE.getCharge()
+    charge[idx] = Q_DBE.getCharge()
     #capacity[idx] = Q_DBE.dQdU_A()
 
 plt.plot(x, charge , label="charge")

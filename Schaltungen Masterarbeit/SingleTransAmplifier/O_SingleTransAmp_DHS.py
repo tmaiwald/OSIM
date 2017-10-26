@@ -8,9 +8,13 @@ class CostFunction(o.AbstractCostFunction):
         ca = o.CircuitAnalyser(ce)
         converged = ca.calcDCOperatingPoint()
 
-        #ref18 = ca.getS11At("V2", 1e9)
-        #print(1-np.absolute(ref18))
-        mag = ca.getGain("V2","OUT",180e9)
+        '''hard constraints'''
+        if(not converged):
+            cost = 1000
+            resultToFill.setCost(cost)
+            return cost
+
+        mag = ca.getGain("V2","OUT",10e10)
         cost = - mag
         resultToFill.setCost(cost)
 
@@ -22,7 +26,10 @@ setup optimization
 
 seq = o.CircuitSystemEquations(o.NetToComp('AmplifierTB.net').getComponents())
 
-olist = [o.Optimizable(["R3"],"R",600,1800),o.Optimizable(["R1"],"R",50000,80000),o.Optimizable(["Q1"],"Nx",1,8)]
+olist = [o.Optimizable(["R3"],"R",600,1800),
+        o.Optimizable(["R1"],"R",50000,80000)]
+        #o.Optimizable(["Q1"],"Nx",1,8)]
+        
 opti = o.DownHillSimplexOptimizer(seq,olist,CostFunction(list()),10,o.SimpleResult(),None)
 opti.run()
 

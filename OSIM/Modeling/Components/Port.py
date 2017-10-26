@@ -32,7 +32,7 @@ class Port(CompositeComponent):
         return self.RI.myBranchCurrent()
 
     def voltageOverMe(self):
-        return self.RI.Udiff([self.nodes[0], self.nodes[1]])
+        return self.Udiff([self.nodes[0], self.nodes[1]])
 
     def setInnerImpedance(self,imp):
         self.innerImpedance = imp

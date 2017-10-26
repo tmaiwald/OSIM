@@ -25,14 +25,14 @@ class QBC(Charge):
         ubi = self.sys.getSolutionAt(self.bi).real
         uci_x = self.sys.getSolutionAt(self.ci_x).real
         K = np.sqrt(1+self.GAMM*u.exp(ubi-uci_x, 1/self.UT, 2))
-        return self.QCO*K
+        return self.QCO#*K
 
     def dQdU_A(self):
         #   a
         #  ---
         #   b
-        ubi = (self.sys.getSolutionAt(self.bi).real)[0]
-        uci_x = (self.sys.getSolutionAt(self.ci_x).real)[0]
-        a = self.GAMM *u.exp(ubi-uci_x, 1/self.UT, 2)
-        b = 2*self.UT*np.sqrt(self.GAMM*u.exp(ubi-uci_x, 1/self.UT, 2)+1)
-        return (a/b)
+        #ubi = (self.sys.getSolutionAt(self.bi).real)
+        #uci_x = (self.sys.getSolutionAt(self.ci_x).real)
+        #a = self.GAMM *u.exp(ubi-uci_x, 1/self.UT, 2)
+        #b = 2*self.UT*np.sqrt(self.GAMM*u.exp(ubi-uci_x, 1/self.UT, 2)+1)
+        return self.QCO#(a/b)

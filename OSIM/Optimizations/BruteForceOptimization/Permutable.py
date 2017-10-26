@@ -36,7 +36,7 @@ class Permutable(object):
 
     def getCurOptimizable(self,intPermutation):
         self.optimizable.setValue(self.getValue(intPermutation))
-        return self.optimizable
+        return True,self.optimizable
 
     def getSetableListEntry(self,intPermutation):
         pass

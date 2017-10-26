@@ -7,7 +7,7 @@ class Resistor(SingleComponent):
 
     def __init__(self, nodes, name, value, superComponent, **kwargs):
         if float(value) == 0:
-            print (name + " Resistor invalid value, will be is set to Rmin = 0.001")
+            print(name + " Resistor invalid value, will be is set to Rmin = 0.001")
             super(Resistor, self).__init__(nodes, name, 0.0000001, superComponent,**kwargs)
         else:
             super(Resistor, self).__init__(nodes, name, value, superComponent, **kwargs)

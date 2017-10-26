@@ -18,9 +18,8 @@ class Inductance(SingleComponent):
 
         if self.sys.atype == CircuitSystemEquations.ATYPE_TRAN:
             return (self.sys.tnow-self.sys.told)/self.value
-        if freq_or_tstep == 0:
-            return complex(1e256)
-        return 1 / (1j * 2 * math.pi * freq_or_tstep * self.value)
+        if self.sys.atype == CircuitSystemEquations.ATYPE_AC:
+            return 1 / (1j * 2 * math.pi * freq_or_tstep * self.value)
 
     def initialSignIntoSysEquations(self): #TODO use function from Component.py
         algebraicSign = 1# Plus

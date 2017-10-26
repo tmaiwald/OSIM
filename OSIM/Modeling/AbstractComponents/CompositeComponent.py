@@ -1,4 +1,5 @@
 from Component import Component
+from numba import jit
 
 class CompositeComponent(Component):
     def __init__(self, nodes, name, value, superComponent, **kwargs):
@@ -30,6 +31,7 @@ class CompositeComponent(Component):
         ps = "".join((self.name, p))
         return self.paramDict.get(ps)
 
+    @jit(nogil=True)
     def doStep(self, freq_or_tau):
         self.performCalculations()
         for c in self.internalComponents:

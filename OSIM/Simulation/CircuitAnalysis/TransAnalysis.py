@@ -1,11 +1,14 @@
+
+
+from __future__ import print_function
 import numpy as np
 from numba import jit
-
+import time
 from CircuitAnalysis import CircuitAnalysis as ca
 from OSIM.Modeling.CircuitSystemEquations import CircuitSystemEquations
 
 
-@jit
+@jit(nogil=True)
 def getTransient(sys,t_from, t_to, timeStep, observeList):
 
     abTime = t_to-t_from
@@ -23,9 +26,13 @@ def getTransient(sys,t_from, t_to, timeStep, observeList):
     for i,o in enumerate(observeList):
         res[i+1][0] = sys.getSolutionAt(o).real
 
+    start = time.time()
+
     for tIdx in range(1,absteps):
         sys.tnow = res[0][tIdx]
-        print("t= %G, t_end = %G, %G %%        \r"%(sys.tnow,res[0][-1],100*sys.tnow/(res[0][-1]-res[0][0])))
+        remTime = (time.time() - start)/tIdx * ((res.shape[1]-tIdx))
+
+        print("Trans.: t= %G, t_end = %G, %G %%, rem.time:%G  sec      "%(sys.tnow,res[0][-1],100*sys.tnow/(res[0][-1]-res[0][0]),remTime),end='\r')
 
         for b in sys.components:
                 b.doStep(sys.tnow-sys.told)
@@ -37,6 +44,8 @@ def getTransient(sys,t_from, t_to, timeStep, observeList):
 
         sys.xprev = sys.x
         sys.told  = sys.tnow
+
+    print("                                                                                                  ",end='\r')
 
     return [res,observeList,"Transient"]
 

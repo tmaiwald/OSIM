@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modeling.CircuitSystemEquations &#8212; OSIM 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Modeling.CircuitSystemEquations</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># Schematic example:</span>
+<span class="c1">#														=               _      _</span>
+<span class="c1">#														A		   *	b   =  x</span>
+<span class="c1">#</span>
+<span class="c1">#                 ____</span>
+<span class="c1">#      __1_______|  R |___2__					|	  			|	 | u1 |   | 0 |</span>
+<span class="c1">#     _|_        |____|      |					|				|	 | u2 |	  | 0 |</span>
+<span class="c1">#    | V |                   |        -----&gt;    |				|  * |----| = |---|</span>
+<span class="c1">#    |___|                 __|_					|				|	 |iV1 |   | V1|</span>
+<span class="c1">#      |                   ____ C				|				|	 |iR1 |	  | 0 |</span>
+<span class="c1">#      |                     |					|				|	 |iC1 |	  | 0 |</span>
+<span class="c1">#     _|_ 0                __|__ 0</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="CircuitSystemEquations"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations">[docs]</a><span class="k">class</span> <span class="nc">CircuitSystemEquations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that contains the main data structures for a curcuit&quot;&quot;&quot;</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constants to define which simulation type is performed. The</span>
+<span class="sd">     corresponding value has to be set before a simulation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ATYPE_NONE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ATYPE_DC</span>   <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">ATYPE_AC</span>   <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">ATYPE_TRAN</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">ATYPE_EST_DC</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">GMIN</span> <span class="o">=</span> <span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">11</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curNewtonIteration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atype</span> <span class="o">=</span> <span class="n">CircuitSystemEquations</span><span class="o">.</span><span class="n">ATYPE_NONE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">sysIdx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">###mapping der Knoten-/Branch-namen auf Index im Gleichungssystem</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">assignToSystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">sysIdx</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">signIntoSysDictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="p">,</span> <span class="n">sysIdx</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="p">)</span><span class="c1">#nnodes + nbranches  # Anzahl der Gleichunhen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xprev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tnow</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">told</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># - Knoten: die Summe alle Stroeme eines Knotens sind &quot;0&quot; - das</span>
+        <span class="c1">#   bedeutet, dass in Zeilen die sich auf Nodes beziehen</span>
+        <span class="c1">#   alle Spalten die sich auf einen jeweiligen Branch beziehen</span>
+        <span class="c1">#   mit einer &quot;(-)1&quot; eingetragen werden -&gt; Definition:</span>
+        <span class="c1">#   Startknoten haben positive Vorzeichen, Endknoten negative</span>
+        <span class="c1"># - Zeilen die sich auf Branches beziehen besteht aus der</span>
+        <span class="c1">#   Admittanz die mit postivem Vorzeichen in der Spalte des</span>
+        <span class="c1">#   Startknotens und mit negativem Vorzeichen am Endknoten</span>
+        <span class="c1">#   . Des Weiteren wird in der Spalte des jeweiligen Branches</span>
+        <span class="c1">#   eine &#39;-1&#39; eingetragen</span>
+        <span class="c1">#</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">initialSignIntoSysEquations</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CircuitSystemEquations.reset"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        method to reset the equations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ATYPE_NONE</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="p">)</span><span class="c1">#nnodes + nbranches  # Anzahl der Gleichunhen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xprev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">initialSignIntoSysEquations</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.getSolutionAt"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.getSolutionAt">[docs]</a>    <span class="k">def</span> <span class="nf">getSolutionAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">componentName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;method to get a value out of the solution vector x</span>
+
+<span class="sd">        :param componentName: name of a component or a node in the netlist</span>
+<span class="sd">        :type componentName: string</span>
+<span class="sd">        :return: solution</span>
+<span class="sd">        :rtype: complex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">componentName</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.setSolutionAt"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.setSolutionAt">[docs]</a>    <span class="k">def</span> <span class="nf">setSolutionAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.getPreviousSolutionAt"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.getPreviousSolutionAt">[docs]</a>    <span class="k">def</span> <span class="nf">getPreviousSolutionAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">componentName</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xprev</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">componentName</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.getCompByName"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.getCompByName">[docs]</a>    <span class="k">def</span> <span class="nf">getCompByName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">b</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">i</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.isVoltage"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.isVoltage">[docs]</a>    <span class="k">def</span> <span class="nf">isVoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="c1">#else: its a current</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">internalComponents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.setParamterForComp"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.setParamterForComp">[docs]</a>    <span class="k">def</span> <span class="nf">setParamterForComp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">compname</span><span class="p">,</span><span class="n">paramname</span><span class="p">,</span><span class="n">paramval</span><span class="p">):</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCompByName</span><span class="p">(</span><span class="n">compname</span><span class="p">)</span>
+        <span class="n">comp</span><span class="o">.</span><span class="n">setParameterOrVariableValue</span><span class="p">(</span><span class="n">paramname</span><span class="p">,</span> <span class="n">paramval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.setParameterForCompsList"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.setParameterForCompsList">[docs]</a>    <span class="k">def</span> <span class="nf">setParameterForCompsList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">setables</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param setables: list([compname,paramname,paramval],[...]) </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">setables</span><span class="p">:</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCompByName</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">comp</span><span class="o">.</span><span class="n">setParameterOrVariableValue</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CircuitSystemEquations.printComponents"><a class="viewcode-back" href="../../Modeling/CircuitSystemEquations.html#Modeling.CircuitSystemEquations.CircuitSystemEquations.printComponents">[docs]</a>    <span class="k">def</span> <span class="nf">printComponents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Tim Maiwald.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

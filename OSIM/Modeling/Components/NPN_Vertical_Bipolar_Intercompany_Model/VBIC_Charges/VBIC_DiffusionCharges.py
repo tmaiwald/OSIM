@@ -2,6 +2,7 @@ import OSIM.Simulation.Utils as u
 from OSIM.Modeling.Components.Charge import Charge
 from OSIM.Modeling.Components.NPN_Vertical_Bipolar_Intercompany_Model.VBIC_ParasitPNP.VBIC_ParasitTransportCurrent import ParasitTransportCurrent
 import numpy as np
+from numba import jit
 
 class QDBE(Charge):
 
@@ -13,16 +14,17 @@ class QDBE(Charge):
             exec (variableExpr)
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.TF = eval(self.paramDict.get("tf", "0.026"))
-        self.QTF = eval(self.paramDict.get("qtf", "0.026"))
-        self.XTF = eval(self.paramDict.get("xtf", "10"))
+        self.TF = eval(self.paramDict.get("tf", "2.67E-13"))
+        self.QTF = eval(self.paramDict.get("qtf", "1E-18"))
+        self.XTF = eval(self.paramDict.get("xtf", "20"))
         self.VTF = eval(self.paramDict.get("vtf", "10"))
-        self.ITF = eval(self.paramDict.get("itf", "10"))
+        self.ITF = eval(self.paramDict.get("itf", "0.1"))
+        self.diffh = 0.000000001
 
     def TFF(self,V):
         itf = self.superComponent.IT.itf
         q1 = self.superComponent.IT.getq1()
-        b = 1+self.XTF*(itf/(itf+self.ITF))**2*u.exp(V,1/(1.44*self.VTF),1.5)
+        b = 1+self.XTF*(itf/(itf+self.ITF))**2*u.exp(V,1/(1.44*self.VTF), 1.5)
         return self.TF*(1+self.QTF*q1)*b
 
     def getCharge(self):
@@ -32,12 +34,12 @@ class QDBE(Charge):
         qb = self.superComponent.IT.getqb()
         return self.TFF(V)*self.superComponent.IT.itf/qb
 
+    @jit
     def dQdU_A(self):
         ufrom = self.sys.getSolutionAt(self.nodes[0]).real
         uto = self.sys.getSolutionAt(self.nodes[1]).real
         V = (ufrom-uto)
-        h = 0.000000001
-        return (self.TFF(V+h)*self.superComponent.IT.itf/self.superComponent.IT.getqb()-self.getCharge())/h
+        return np.abs((self.TFF(V+self.diffh)*self.superComponent.IT.itf/self.superComponent.IT.getqb()-self.getCharge())/self.diffh)
 
     def reloadParams(self):
 
@@ -46,11 +48,11 @@ class QDBE(Charge):
             exec(variableExpr)
 
         self.UT = eval(self.paramDict.get("ut", "0.026"))
-        self.TF = eval(self.paramDict.get("tf", "0.026"))
-        self.QTF = eval(self.paramDict.get("qtf", "0.026"))
-        self.XTF = eval(self.paramDict.get("xtf", "10"))
+        self.TF = eval(self.paramDict.get("tf", "2.67E-13"))
+        self.QTF = eval(self.paramDict.get("qtf", "1E-18"))
+        self.XTF = eval(self.paramDict.get("xtf", "20"))
         self.VTF = eval(self.paramDict.get("vtf", "10"))
-        self.ITF = eval(self.paramDict.get("itf", "10"))
+        self.ITF = eval(self.paramDict.get("itf", "0.1"))
 
 
 class QDBC(Charge):
@@ -62,13 +64,14 @@ class QDBC(Charge):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.TR = eval(self.paramDict.get("tr", "0.026"))
+        self.TR = eval(self.paramDict.get("tr", "5E-12"))
 
     def getCharge(self):
         return self.TR*self.superComponent.IT.itr
 
+    @jit
     def dQdU_A(self):
-        return self.TR*self.superComponent.ditr_A()
+        return np.abs(self.TR*self.superComponent.ditr_A())
 
     def reloadParams(self):
 
@@ -76,13 +79,13 @@ class QDBC(Charge):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.TR = eval(self.paramDict.get("tr", "0.026"))
+        self.TR = eval(self.paramDict.get("tr", "5E-12"))
 
 
 class QDBEP(Charge):
 
     def __init__(self, nodes, name, value, superComponent, **kwargs):
-        self.PCS = ParasitTransportCurrent(['0','0','0'], "0", "0", None)
+        self.PCS = ParasitTransportCurrent(['0','0','0'], "0", "0", None,**kwargs)
         super(QDBEP, self).__init__(nodes, name, value, superComponent,**kwargs)
 
         if self.PCS.name == "0":
@@ -92,7 +95,7 @@ class QDBEP(Charge):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.TR = eval(self.paramDict.get("tr", "0.026"))
+        self.TR = eval(self.paramDict.get("tr", "5E-12"))
 
     def getCharge(self):
         return [self.TR*self.PCS.itfp]
@@ -112,4 +115,4 @@ class QDBEP(Charge):
             variableExpr = "".join((v, "=", self.variableDict[v]))
             exec(variableExpr)
 
-        self.TR = eval(self.paramDict.get("tr", "0.026"))
+        self.TR = eval(self.paramDict.get("tr", "5E-12"))

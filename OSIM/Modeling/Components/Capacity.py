@@ -15,7 +15,6 @@ class Capacity(SingleComponent):
             self.sys.b[myIdx] = adm * (x1v - x2v)
 
     def getAdmittance(self, nodesFromTo, freq_or_tstep):
-        #TODO fuer nummerische Stabilitaet einen kleinen Leitwert parallel schalten
         if self.sys.atype == CircuitSystemEquations.ATYPE_TRAN:
             return self.value/(self.sys.tnow-self.sys.told)
         else:

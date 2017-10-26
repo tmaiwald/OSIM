@@ -4,7 +4,6 @@ from numba import jit
 import OSIM.Simulation.Utils as u
 from OSIM.Modeling.AbstractComponents.NonlinearComponent import NonlinearComponent
 
-
 # Is = Sperrsaettigungsstrom
 # Ut = Temperaturspannung = Boltzmannkonstante*Temperatur/Elementarladung
 # I_SR = Leck-Saettigungsstrom
@@ -58,11 +57,11 @@ class Diode(NonlinearComponent):
             b = (Ud[0] * (Ud[0] - 2 * self.Udifu)) / self.Udifu ** 2
             c = Ud[0] * (2 * self.Udifu - Ud[0])
             d = self.Is * np.exp(Ud[0] / (self.n * self.Ut)) / (self.n * self.Ut)
-            self.gd = ((a * b ** (self.ms / 2) / c) * d)
+            self.gd = ((a * b ** (self.ms / 2) / c) * d) + self.sys.GMIN
 
         # Schockley Equation:
         self.current = self.Is/self.B * (u.exp(Ud[0],1/(self.Ut * self.n), self.Udlim)-1)
-        self.gd = self.Is/self.B * u.dexp(Ud[0],1/(self.Ut * self.n), self.Udlim)
+        self.gd = self.Is/self.B * u.dexp(Ud[0],1/(self.Ut * self.n), self.Udlim)+self.sys.GMIN
 
     @staticmethod
     def curr(FAK, IS, exp, expfak):

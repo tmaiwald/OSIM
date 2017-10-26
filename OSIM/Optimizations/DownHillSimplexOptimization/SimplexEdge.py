@@ -10,7 +10,7 @@ class SimplexEdge(object):
 
         # index in Liste entspricht auch index in Werte
         self.olist = deepcopy(olist)
-        self.x = np.zeros((len(olist),1),dtype=np.float64)
+        self.x = np.zeros(len(olist),dtype=np.float64)
         self.g = np.zeros_like(self.x)
         self.costFunction = costFunction
         self.sys = sysEq
@@ -41,7 +41,7 @@ class SimplexEdge(object):
             o = self.olist[vIdx]
             if(self.x[vIdx] < 0):
                 self.x[vIdx] = 0.001
-            o.setValue(self.x[vIdx][0])
+            o.setValue(self.x[vIdx])
 
         for o in self.olist:
             for n in o.getOptimizableComponentNames():

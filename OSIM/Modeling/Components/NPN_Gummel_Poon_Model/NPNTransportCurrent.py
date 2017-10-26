@@ -87,7 +87,7 @@ class NPNTransportCurrent(NonlinearComponent):
         uce = uc - ue
 
         if self.sys.atype == CircuitSystemEquations.ATYPE_NONE:
-            print ("NPNTransportCurrent: WARNING: Analysis Type has to be set!")
+            print("NPNTransportCurrent: WARNING: Analysis Type has to be set!")
 
         if self.sys.atype in [CircuitSystemEquations.ATYPE_DC,CircuitSystemEquations.ATYPE_TRAN]:
 

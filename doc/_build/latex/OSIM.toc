@@ -1,0 +1,11 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Modeling}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}Circuit System Equations}{3}{section.1.1}
+\contentsline {section}{\numberline {1.2}Components}{4}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}OSIM.Modeling.AbstractComponents.Component module}{4}{subsection.1.2.1}
+\contentsline {chapter}{\numberline {2}Simulation}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Simulation.NetToComp}{7}{section.2.1}
+\contentsline {chapter}{\numberline {3}Optimization}{9}{chapter.3}
+\contentsline {section}{\numberline {3.1}Optimizer}{9}{section.3.1}
+\contentsline {chapter}{\numberline {4}Indices and tables}{11}{chapter.4}
+\contentsline {chapter}{Python Module Index}{13}{section*.62}

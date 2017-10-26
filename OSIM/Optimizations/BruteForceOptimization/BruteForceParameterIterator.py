@@ -34,18 +34,21 @@ class BruteForceParameterIterator(AbstractVariableIterator):
         if(not self.isFinished()):
 
             setableList = list()
+            newCombination = False
+            while(not newCombination):
+                for p in self.permutableList:
+                    newCombination,o = p.getCurOptimizable(self.currentIteration)
+                    if(newCombination == False):
+                        break
+                    for n in o.getOptimizableComponentNames():
+                        """compname, paramname, paramval"""
+                        n = [n, o.getParamName(), o.getValue()]
+                        setableList.append(n)
+                    print(str(o.getOptimizableComponentNames()) + " " + str(o.getValue()))
+                if (newCombination == True):
+                    sys.setParameterForCompsList(setableList)
 
-            for p in self.permutableList:
-                o = p.getCurOptimizable(self.currentIteration)
-                for n in o.getOptimizableComponentNames():
-                    """compname, paramname, paramval"""
-                    n = [n, o.getParamName(), o.getValue()]
-                    setableList.append(n)
-                print(str(o.getOptimizableComponentNames()) + " " + str(o.getValue()))
-
-            sys.setParameterForCompsList(setableList)
-
-            self.currentIteration +=1
+                self.currentIteration +=1
 
     def isFinished(self):
 
