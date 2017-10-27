@@ -18,7 +18,7 @@ import scipy as np
 from scipy.sparse import csc_matrix
 
 class CircuitSystemEquations(object):
-    """Class that contains the main data structures for a curcuit"""
+    """Class that contains the main data structures for a circuit"""
 
     """
     Constants to define which simulation type is performed. The

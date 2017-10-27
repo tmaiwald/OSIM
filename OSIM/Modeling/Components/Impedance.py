@@ -13,6 +13,7 @@ class Impedance(SingleComponent):
             super(Impedance, self).__init__(nodes, name, value, superComponent, **kwargs)
 
     def doStep(self, freq_or_tau):
+
         if self.sys.atype == CircuitSystemEquations.ATYPE_AC:
             return
         self.insertAdmittanceintoSystem(freq_or_tau)
